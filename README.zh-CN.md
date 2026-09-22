@@ -115,6 +115,29 @@ Web 的「应用 / 重启 / 卸载」只动 Web。桌面端的「应用 / 重启
 
 > 🌐 **插件生态市场**：[DeepSeek Harness Hub](https://deepseek.stream/plugins/dsh-purge)（只看介绍；**不要**用 `deepseek.stream/api/plugins/download?...` 安装）
 
+### DSHA（Android）
+
+打开 **DSHA → 插件**，粘贴仓库地址，确认预览后安装：
+
+```
+https://github.com/Kiyoscripts/Dshpurge
+```
+
+DSHA 也接受旧的 `.zip` 归档地址，但优先用仓库地址。安装后从 **DSHA → 启动页** 重启 Web，再进 Harness 设置 → **规则** 点「应用」。在 DSHA 上，重启、更新与卸载都由宿主（App）负责，不会由容器内插件自行派生进程。
+
+宿主判定：DSHA 会注入 `DSHA_APP=1`，同时还有 `DSH_HOME` / `DSHA_WEB_GENERATION` / `DSHA_STARTUP_PROFILE`。对没有注入 `DSHA_APP` 的旧版 DSHA，插件也接受任意 DSHA 专属变量作为宿主旁证，因此在 Android 容器里不会退回独立 Web 的行为（改写启动器、自行重启 Web、自我更新）。显式设置 `DSH_SURFACE` 仍然优先。
+
+`autoApplyOnStart` / `autoUpdateOnStart` 在 DSHA 上保持 `true` 是刻意的：二者都会在改写任何文件前被宿主判定短路（`autoApply` 返回 `skip:dsha_manual_apply_required`，更新器返回 `skipped:host_managed`）。关掉开关并不能多一层保护，反而会让 Web / 桌面端失去自动应用与自动更新。由于 DSHA 启动阶段不自动应用，规则卡片会明确提示手动「应用」，最近一次启动决策以 `auto_apply` 暴露在状态负载里。
+
+#### 权限预设：不要删除 `DSH_PERMISSION_MODE`
+
+patch 7 与 patch 8 改写的 `sandbox-policy.mode`、`approval.policy` 两行都从 `process.env.DSH_PERMISSION_MODE` 求值，组合出的 `(sandbox, approval)` **必须**落在 `dsh-permission-presets` 的 presets 表内（`read-only` / `workspace-write` / `danger-full-access`），否则 dsh 会以 `composed sandbox and approval defaults match no preset` 拒绝启动。由此固定两条约束，缺一不可：
+
+- **不得删除 `process.env.DSH_PERMISSION_MODE`。** `applyRuntimeEnv()` 曾经在值为 `danger-full-access` 时删掉它，而该函数在插件加载时被无条件调用，于是运行中的进程环境被就地改坏，两行各自落到兜底值 —— 真机起不来正是这个原因。现有回归测试锁定该不变量（`test/permission-env.test.js`）。
+- **两个补丁的 `??` 兜底值必须一致。** 否则变量缺失时配对就会落到表外。
+
+若启用本插件后 Web 仍起不来，请进 DSHA 的**启动恢复页**停用本插件 —— 这样一定能恢复到可启动状态。
+
 ### Web 端（默认）
 
 ```sh
@@ -733,6 +756,13 @@ prompt-inject.md 有内容? ──是──> 原样写入 dsh-purge systemPrompt
 ---
 
 ## 更新记录
+
+### 1.3.0
+
+- 基于上游 1.1.11 重新 rebase，保留上游的安全修复（本机接口拒绝跨站请求、更新只接受已知 ref）、提示词每轮只注入一次（#29）、空提示词拦截，以及正式版 / 测试版分栏。
+- **关键修复（DSHA / Android）：** `applyRuntimeEnv()` 会在值为 `danger-full-access` 时 delete 掉 `process.env.DSH_PERMISSION_MODE`。由于该函数在插件加载时被无条件调用，变量会从运行中的进程里被抹掉；dsh-base 的两行权限都读它，于是各自落到兜底值，组合出的 `(sandbox, approval)` 可能对不上 `dsh-permission-presets` 的表，dsh 随即以 `composed sandbox and approval defaults match no preset` 拒绝启动。该函数现在只汇报环境。回归测试：`test/permission-env.test.js`。
+- 识别 DSHA 宿主：`DSHA_APP=1`，并接受任意 DSHA 专属变量以兼容旧版，Android 容器内不会退回独立 Web 的行为。
+- 恢复上游没有的 `dsha` 宿主适配器（`lib/dsha.js`）与 `surface.dsha` 标签。
 
 ### 1.1.11
 

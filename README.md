@@ -118,6 +118,29 @@ Web **Apply / Restart / Uninstall** affect Web only. Desktop **Apply / Restart /
 
 > 🌐 **Plugin hub:** [DeepSeek Harness Hub](https://deepseek.stream/plugins/dsh-purge) (docs only — **do not** install via `deepseek.stream/api/plugins/download?...`)
 
+### DSHA for Android
+
+Open **DSHA → Plugins**, paste the repository URL, review the preview, and confirm installation:
+
+```
+https://github.com/Kiyoscripts/Dshpurge
+```
+
+DSHA also accepts the older `.zip` archive URL, but the repository URL is preferred. Restart Web from **DSHA → Launch**, then open Harness Settings → **Rules** and click **Apply**. Under DSHA, restart, update, and package removal remain host-managed rather than being spawned from the container plugin.
+
+Host detection: DSHA exports `DSHA_APP=1` together with `DSH_HOME` / `DSHA_WEB_GENERATION` / `DSHA_STARTUP_PROFILE`. For older DSHA builds that did not export `DSHA_APP`, the plugin also accepts any DSHA-only variable as proof of a DSHA host, so it never falls back to standalone-Web behaviour (patching launchers, respawning Web, self-updating) inside the Android container. An explicit `DSH_SURFACE` still overrides detection.
+
+`autoApplyOnStart` / `autoUpdateOnStart` stay `true` on DSHA by design: both decisions are short-circuited by the host check before any file is written (`autoApply` returns `skip:dsha_manual_apply_required`, the updater returns `skipped:host_managed`). Disabling the switches would not add protection — it would only remove auto-apply and auto-update from Web and Desktop. Because startup never auto-applies on DSHA, the Rules card shows an explicit Apply reminder, and the last startup decision is reported as `auto_apply` in the plugin status payload.
+
+#### Permission presets: never delete `DSH_PERMISSION_MODE`
+
+Patches 7 and 8 rewrite `sandbox-policy.mode` and `approval.policy` in `dsh-base/cordis.patch.yml`. Both rows evaluate `process.env.DSH_PERMISSION_MODE`, and the resulting `(sandbox, approval)` pair **must** match an entry in the `dsh-permission-presets` table (`read-only` / `workspace-write` / `danger-full-access`) or dsh refuses to start with `composed sandbox and approval defaults match no preset`. Two rules follow, and both are load-bearing:
+
+- **Never delete `DSH_PERMISSION_MODE` from `process.env`.** `applyRuntimeEnv()` used to delete it when the value was `danger-full-access`; because that helper runs unconditionally at plugin load, it stripped the variable from the live process and let the two rows fall back independently — which is how a DSHA device ended up unable to start Web. A regression test now pins this (`test/permission-env.test.js`).
+- **Keep the two fallback values aligned.** If patch 7's `??` default differs from patch 8's, the pair goes off-table whenever the variable is absent.
+
+If Web still will not start after enabling this plugin, open DSHA's **startup recovery page** and disable it — that always restores a booting Web.
+
 ### Web (default)
 
 ```sh
@@ -746,6 +769,23 @@ If nothing is found, set `DSH_BASE` / `DSH_DESKTOP_INSTALL`. No files are change
 ---
 
 ## Changelog
+
+### 1.3.0
+
+- Rebased onto upstream 1.1.11 — keeps upstream's security fix (local endpoints reject
+  cross-site requests, updates accept only known refs), the once-per-turn prompt injection
+  fix (#29), empty-prompt interception, and the Stable / Beta split.
+- **Critical fix (DSHA / Android):** `applyRuntimeEnv()` deleted `DSH_PERMISSION_MODE` from
+  `process.env` when its value was `danger-full-access`. Because that helper runs
+  unconditionally at plugin load, it stripped the variable from the live process; the two
+  dsh-base permission rows both read it, fell back independently, and could compose an
+  `(sandbox, approval)` pair matching no entry in the `dsh-permission-presets` table —
+  making dsh refuse to start with `composed sandbox and approval defaults match no preset`.
+  The helper now only reports the environment. Regression test: `test/permission-env.test.js`.
+- DSHA host detection: `DSHA_APP=1`, plus any DSHA-only variable for older builds, so the
+  plugin never falls back to standalone-Web behaviour inside the Android container.
+- Restored the `dsha` host adapter (`lib/dsha.js`) and the `surface.dsha` label, which
+  upstream does not ship.
 
 ### 1.1.11
 
