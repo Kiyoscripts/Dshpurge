@@ -4,10 +4,10 @@
 
 <h1 align="center">⚔️ DeepSeek Harness cybersecurity red-team tool (dsh-purge)</h1>
 
-<p align="center"><strong>Version 1.1.11</strong></p>
+<p align="center"><strong>Version 1.1.34</strong></p>
 
 <p align="center">
-    <em>Local official DeepSeek Harness cybersecurity red-team plugin: evaluate and harden host safety policy in a controlled local install; swap prompts per model. Default prompt for Chinese models — 小码酱. Please star ⭐</em>
+  <em>Local official DeepSeek Harness cybersecurity red-team plugin. Clean host policy, and ship a built-in drill console. Swap prompts per model. Default prompt for Chinese models — 小码酱. Please star ⭐</em>
 </p>
 
 <p align="center">
@@ -15,9 +15,9 @@
   <a href="https://github.com/YuJunZhiXue/dsh-purge/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-65a30d?style=flat" alt="MIT license"></a>
   <a href="https://awesome-dsh-plugin.com"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="awesome · DSH plugin"></a>
   <a href="https://deepseek.stream/plugins/dsh-purge"><img src="https://img.shields.io/badge/Hub-dsh--purge-1a73e8" alt="DeepSeek Harness Hub"></a>
-  <a href="https://www.deepseek.com/harness/"><img src="https://img.shields.io/badge/dsh-0.1.5--rc.1-blue" alt="DSH"></a>
+  <a href="https://www.deepseek.com/harness/"><img src="https://img.shields.io/badge/dsh-0.1.7--rc.2-blue" alt="DSH"></a>
   <br>
-  <img src="https://img.shields.io/badge/Node.js-%3E%3D22-339933?logo=node.js&logoColor=fff" alt="Node.js">
+  <img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=fff" alt="Node.js">
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000" alt="JavaScript">
 </p>
 
@@ -25,40 +25,45 @@
   <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a>
 </p>
 
-> 🌐 **Plugin hub:** [DeepSeek Harness Hub](https://deepseek.stream/plugins/dsh-purge) — official and community DeepSeek plugin market | discover and one-click install
+> **After Apply, you must click Restart or the inject does not take effect.** Apply only writes the prompt and patches to disk. This process is still the old one. When the host has restarted, start a new chat — that is when the inject enters the session. Apply alone looks like nothing was injected.
 
-> Aligned with **dsh 0.1.5-rc.2** (Node.js **≥18**; Windows no-flash import hooks need **Node ≥22** `registerHooks`, older Node still gets file-level `windowsHide` patches). On other versions, unmatched originals stay pending or skipped. Nothing is rewritten blindly.
+> Current target is **dsh 0.1.7-rc.2**. The previous target, **0.1.7-rc.1** (including `0.1.7-rc.1.20260924.1`), still matches (Node.js **≥18**; Windows no-flash import hooks need **Node ≥22** `registerHooks`, older Node still gets file-level `windowsHide` patches). Patterns from older host builds that no longer exist are not applied. On other versions, unmatched originals stay pending or skipped. Nothing is rewritten blindly. Also accepts the 0.1.2 community `dsh-persona text` field and `dsh-mnemon` v0 session `summary`. After install you still need **Apply + restart**.
 >
-> Also accepts the 0.1.2 community `dsh-persona text` field and `dsh-mnemon` v0 session `summary`. After install you still need **Apply + restart**.
+> Hub page is for reading only: [DeepSeek Harness Hub](https://deepseek.stream/plugins/dsh-purge). Do not install via `deepseek.stream/api/plugins/download?...`.
+
+## Contents
+
+- [What this is](#what-this-is)
+- [Install](#install)
+- [Preview](#preview)
+- [Usage](#usage)
+- [How it works](#how-it-works)
+- [Restore](#restore)
+- [Releases](#releases)
 
 ---
 
-## ☕ Sponsor
+## What this is
 
-If this project helps you, send it over — I'm out here asking~
+**dsh-purge** is a cybersecurity red-team plugin for the official [DeepSeek Harness](https://www.deepseek.com/harness/) already installed on your machine.
 
-| Asset | Address |
+Harness does more than forward a prompt. It rewrites prompts, approval gates, sandbox policy, and session migration at runtime. Asking only “will the model answer” treats a host-layer block as a model refusal. This plugin separates those two layers on your own install, for controlled evaluation and for seeing which default policy is too tight.
+
+| You get | What it does |
 |---|---|
-| **USDT (TRC20)** | `TV5ajPkRD8RH623Dx9mqvYZVNN8nPGRKid` |
-| **Solana** | `6x16GhRgLVpKFFXaU1seKNdx2rypspSJTL4dbpt6Xpwk` |
-| **Ethereum** | `0xB68BD60C0e8c519513B7DF9bB147696815423B3E` |
-| **Bitcoin** | `bc1qu70yxkrtwnymt8ryluz9x8y8hqzune5340npht` |
+| **dsh-purge dock** | A button beside the session title opens the right dock. Two pages: Clean and Drill |
+| **Clean** | Grouped patch status, Apply / Restore / Uninstall, prompt editor, multiple rule sets |
+| **Drill** | Built into the stable release. After authorization: assets, skills, and the local environment. Only for a host you manage, an offline target, or a written authorized exercise |
+| **Host policy** | Default copy, permission policy, and tool limits. Official capabilities stay. No second invented identity |
+| **On start** | Checks and reapplies. After npm overwrites `node_modules`, you do not hand-edit files |
 
-<p align="center">
-  <sub>Built by 小杨 · for DeepSeek Harness</sub>
-</p>
+No hardcoded drive letters. It looks at `$DSH_HOME`, `.dsh` next to the dsh launcher, then `~/.dsh`. It does not patch the Harness source tree. **Apply** on the **Clean** page of **dsh-purge** is what writes the changes. Identity comes only from your `prompt-inject.md`.
+
+It only touches the official `@deepseek-ai` packages and local config on the user's machine. It is not a public scanner and not an attack kit for third-party sites. The repo does not ship malware, unauthorized-exploit scripts, or payloads aimed at the public internet.
 
 ---
 
-## 🛡️ Why cybersecurity red-teaming matters
-
-As generative AI and large language models move into production, robustness, adversarial defense, and alignment safety are core cybersecurity research problems. A local Agent / Harness also rewrites prompts, approval gates, sandbox policy, and session migration at runtime. Asking “will the model answer” is not enough if the host layer kills a lawful eval request first.
-
-1. **Map the defense boundary, then harden the guardrail.** Professional cybersecurity red-teaming on a controlled local official DeepSeek Harness install is how teams find guardrail failures, prompt-injection, and unexpected-behavior gaps — then feed those findings back into fine-tuning, input guardrails, and the system safety layer.
-2. **Build an offense–defense eval loop.** Defense without a controlled red-team suite is guesswork. Reversible patches on the installed official `@deepseek-ai/*` packages show which refusals come from the model and which come from default copy, approval ladders, or session-format checks — a reproducible ruler for labs and auditors.
-3. **Advance native model-security research.** The project aims to give academia and security engineering a transparent, local, reproducible baseline. Keep official capabilities; only adjust over-refusal policy for controlled security eval. No second invented identity, and official optimizations stay.
-
-This is a **local official DeepSeek Harness cybersecurity red-team plugin**. It only touches **your** installed official `@deepseek-ai` packages and local config. It is **not** a public scanner, **not** an attack kit for third-party sites, and the repo does **not** ship malware, unauthorized-exploit scripts, or payloads aimed at the public internet.
+## 📌 非盈利公益项目，严禁任何主体用于商业售卖、付费倒卖或黑灰产牟利，仅供技术参考。
 
 ---
 
@@ -98,25 +103,27 @@ This is a **local official DeepSeek Harness cybersecurity red-team plugin**. It 
 
 ---
 
-## ⚡ Install
+## Install
 
-Web and Desktop are **installed and security-eval patched separately**. They do not touch each other.
+Web, community Desktop, and the official desktop EXE are **installed and patched separately**. Install only the host you have open.
 
-| Host | Profile | Default install |
+| What you run | Profile | Go to |
 |---|---|---|
-| **Web** (official `dsh web`) | `web` | Official `dsh` on PATH |
-| **Desktop** (community [DSH Desktop](https://github.com/anywhere-labs/dsh-desktop)) | `desktop` | `dsh` inside the app’s built-in terminal (not official `dsh` on PATH) |
-| Official Harness desktop EXE | `default` | Official `dsh`, or `dsh://` below |
+| Official `dsh web` | `web` | [Web](#web) |
+| Community [DSH Desktop](https://github.com/anywhere-labs/dsh-desktop) | `desktop` | [Community Desktop](#desktop) |
+| Official Harness desktop EXE | `default` | [Official desktop EXE](#official-exe) |
 
-After install:
+If `dsh` is not on PATH, or you do not want a remote install, use [Manual install](#manual).
 
-1. Fully quit and restart **the host you just installed into** (stop `dsh web`, or quit the Desktop tray and open `DSH Desktop.exe`)
-2. When **Rules** appears on that host’s Settings page, click **Apply** (adding the bundle does not patch `@deepseek-ai` by itself)
-3. On start the plugin auto-applies the current host and uses the built-in default prompt unless the user has saved a different one
+### After the command: three steps
 
-Web **Apply / Restart / Uninstall** affect Web only. Desktop **Apply / Restart / Uninstall** affect the desktop app only — they do not launch `dsh web`.
+Adding the plugin to a profile does **not** patch `@deepseek-ai` by itself.
 
-> 🌐 **Plugin hub:** [DeepSeek Harness Hub](https://deepseek.stream/plugins/dsh-purge) (docs only — **do not** install via `deepseek.stream/api/plugins/download?...`)
+1. **Quit and reopen** the host you just installed into. Stop `dsh web` and start it again, or quit the Desktop tray and open that app's exe.
+2. On **that host**, click **dsh-purge** beside the session title, then click **Apply** on the **Clean** page. This plugin does not appear on the host Settings page.
+3. **Restart once more** when prompted. Patched files load on that next start. Restart happens only when you click it.
+
+Web **Apply / Restart / Uninstall** affect Web only. Desktop controls affect the desktop app only and do not launch `dsh web`. Do not Apply one host from the other.
 
 ### DSHA for Android
 
@@ -141,7 +148,11 @@ Patches 7 and 8 rewrite `sandbox-policy.mode` and `approval.policy` in `dsh-base
 
 If Web still will not start after enabling this plugin, open DSHA's **startup recovery page** and disable it — that always restores a booting Web.
 
-### Web (default)
+<a id="web"></a>
+
+### Web
+
+Official `dsh` must be on PATH. If it is not, install the official CLI or use manual install.
 
 ```sh
 dsh plugin --profile web add https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz
@@ -153,21 +164,28 @@ If this directory is already a clone:
 dsh plugin --profile web add .
 ```
 
-Then stop `dsh web`, start it again, and **Apply** on the Web Settings page. If `dsh` is not on PATH, install the official CLI or use **Manual install** below.
+Then follow the three steps above. Click **dsh-purge** beside the session title and **Apply** on **Clean**.
 
-### Desktop (default)
+<a id="desktop"></a>
 
-Open community [DSH Desktop](https://github.com/anywhere-labs/dsh-desktop) and run this in the **built-in terminal** (`dsh` is the desktop wrapper; default profile is `desktop`):
+### Community Desktop
+
+Open [DSH Desktop](https://github.com/anywhere-labs/dsh-desktop) and run this in the **built-in terminal**. That `dsh` is the desktop wrapper; its default profile is `desktop`.
 
 ```sh
 dsh plugin add https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz
 ```
 
-Do not use official `dsh plugin --profile desktop` on PATH (it is rejected). Do not use `dsh://` (that is the official EXE).
+Do not use official `dsh plugin --profile desktop` on PATH (it is rejected). Do not use `dsh://` (that protocol belongs to the official EXE).
 
-Then quit the tray, reopen `DSH Desktop.exe`, and **Apply** on the **desktop** Settings page.
+Then quit the tray, reopen `DSH Desktop.exe`, click **dsh-purge** beside the session title, and **Apply** on **Clean**.
 
-From a system terminal, use the app’s own CLI. Locate `DSH Desktop.exe` from the running process or the default install locations:
+For a custom install folder, set `$exe` in the script to `DSH Desktop.exe` in that folder. The tarball URL is the source so a local path with spaces cannot split the command.
+
+<details>
+<summary><strong>Install from system PowerShell</strong></summary>
+
+Find `DSH Desktop.exe` from the running process or the default locations below. Do not scan the whole disk.
 
 ```powershell
 $zip = "https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz"
@@ -189,13 +207,95 @@ $env:DSH_DESKTOP_DEFAULT_PROFILE = "desktop"
 & $exe --expose-internals $cli plugin add $zip
 ```
 
-For a custom install folder, set `$exe` to `DSH Desktop.exe` in that folder. The tarball URL is the default source so a local path with spaces cannot split the command.
+</details>
 
-### Hand this to an AI (install only)
+<a id="official-exe"></a>
 
-Paste the block below to a local coding assistant and ask it to install the plugin.
+### Official desktop EXE
 
-<details open>
+If the **official DeepSeek Harness desktop client** is installed, use the command or the button (`dsh://`). Community DSH Desktop does **not** handle that protocol — use the previous section. Current patches target **0.1.7-rc.2**. The **0.1.7-rc.1** anchors are still there.
+
+```sh
+dsh plugin --profile default add https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz
+```
+
+<p align="center">
+  <a href="https://deepseek.stream/plugins/dsh-purge"><strong>🌐 Open Hub page</strong></a>
+  &nbsp;·&nbsp;
+  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.22&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FYuJunZhiXue%2Fdsh-purge%2Farchive%2Frefs%2Fheads%2Fmaster.tar.gz"><strong>🚀 Install in desktop client</strong></a>
+</p>
+
+🔗 **Raw protocol URL:**
+
+```
+dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.22&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FYuJunZhiXue%2Fdsh-purge%2Farchive%2Frefs%2Fheads%2Fmaster.tar.gz
+```
+
+<details>
+<summary><strong>Protocol parameters and web trigger</strong></summary>
+
+**Web trigger example:**
+
+```js
+/**
+ * Open the DeepSeek Harness desktop client to install dsh-purge
+ */
+export function installDshPurgeToDesktop() {
+  const params = new URLSearchParams({
+    id: 'dsh-purge',
+    name: 'dsh-purge',
+    version: '1.1.22',
+    repo: 'YuJunZhiXue/dsh-purge',
+    permissions: '系统提示词注入, 本机补丁, 设置页',
+    downloadUrl: 'https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz',
+  });
+
+  const deepLink = `dsh://plugin/install?${params.toString()}`;
+
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = deepLink;
+  document.body.appendChild(iframe);
+  setTimeout(() => document.body.removeChild(iframe), 2000);
+}
+```
+
+**HTML link:**
+
+```html
+<a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.22&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FYuJunZhiXue%2Fdsh-purge%2Farchive%2Frefs%2Fheads%2Fmaster.tar.gz">
+  🚀 Install in desktop client
+</a>
+```
+
+**`dsh://plugin/install` parameters:**
+
+| Param | Value / example | Meaning |
+|---|---|---|
+| id | `dsh-purge` | Plugin id |
+| name | `dsh-purge` | Display name |
+| version | `1.1.22` | Semver |
+| repo | `YuJunZhiXue/dsh-purge` | GitHub repo |
+| permissions | `系统提示词注入, 本机补丁, 设置页` | Requested permissions |
+| downloadUrl | `https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz` | GitHub source archive |
+
+</details>
+
+Then fully quit the official client, including the tray, and open it again.
+
+On the official desktop, click **Apply**, then restart.
+
+### How to tell it installed
+
+- **dsh-purge** sits beside the session title, and **Apply** is on its Clean page
+- `/purge status` in chat prints `DSH_HOME` and the patch list; the path should be the home you are actually running
+- Optional packages that are not installed (liangshen) show as skipped and do not block Apply
+
+### Hand this to an assistant
+
+Paste the block below to a local assistant. It should only run the install command: no full-disk scan, no other file edits, no Apply, no restart.
+
+<details>
 <summary><strong>For AI assistants (install only)</strong></summary>
 
 <!-- AI-AGENT-START -->
@@ -250,82 +350,17 @@ $env:DSH_DESKTOP_DEFAULT_PROFILE = "desktop"
 dsh plugin --profile default add https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz
 ```
 
-After the command finishes, tell the user to fully quit and restart the host they just installed into, then **Apply** on that host’s Settings page. Do not Apply Web from Desktop or Desktop from Web. Then stop.
+After the command finishes, tell the user to fully quit and restart the host they just installed into, then open **dsh-purge** beside the session title and **Apply** on **Clean**. Do not Apply Web from Desktop or Desktop from Web. Then stop.
 
 <!-- AI-AGENT-END -->
 
 </details>
 
-### Official desktop EXE (`dsh://`)
-
-If the **official DeepSeek Harness desktop client (EXE)** is installed, the button below opens a system URI. Community [DSH Desktop](https://github.com/anywhere-labs/dsh-desktop) does **not** handle `dsh://` — use **Desktop (default)** above.
-
-CLI equivalent:
-
-```sh
-dsh plugin --profile default add https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz
-```
-
-<p align="center">
-  <a href="https://deepseek.stream/plugins/dsh-purge"><strong>🌐 Open Hub page</strong></a>
-  &nbsp;·&nbsp;
-  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.11&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FYuJunZhiXue%2Fdsh-purge%2Farchive%2Frefs%2Fheads%2Fmaster.tar.gz"><strong>🚀 Install in desktop client</strong></a>
-</p>
-
-🔗 **Raw protocol URL:**
-
-```
-dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.11&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FYuJunZhiXue%2Fdsh-purge%2Farchive%2Frefs%2Fheads%2Fmaster.tar.gz
-```
-
-**Web trigger example:**
-
-```js
-/**
- * Open the DeepSeek Harness desktop client to install dsh-purge
- */
-export function installDshPurgeToDesktop() {
-  const params = new URLSearchParams({
-    id: 'dsh-purge',
-    name: 'dsh-purge',
-    version: '1.1.11',
-    repo: 'YuJunZhiXue/dsh-purge',
-    permissions: '系统提示词注入, 本机补丁, 设置页',
-    downloadUrl: 'https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz',
-  });
-
-  const deepLink = `dsh://plugin/install?${params.toString()}`;
-
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.src = deepLink;
-  document.body.appendChild(iframe);
-  setTimeout(() => document.body.removeChild(iframe), 2000);
-}
-```
-
-**HTML link:**
-
-```html
-<a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.11&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fgithub.com%2FYuJunZhiXue%2Fdsh-purge%2Farchive%2Frefs%2Fheads%2Fmaster.tar.gz">
-  🚀 Install in desktop client
-</a>
-```
-
-**`dsh://plugin/install` parameters:**
-
-| Param | Value / example | Meaning |
-|---|---|---|
-| id | `dsh-purge` | Plugin id |
-| name | `dsh-purge` | Display name |
-| version | `1.1.11` | Semver |
-| repo | `YuJunZhiXue/dsh-purge` | GitHub repo |
-| permissions | `系统提示词注入, 本机补丁, 设置页` | Requested permissions |
-| downloadUrl | `https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz` | GitHub source archive |
+<a id="manual"></a>
 
 ### Manual install
 
-Use this when `dsh` is not on `PATH`, official `dsh plugin add` fails, or you do not want a remote install. Edit **only the profile for the host you are using**. Do **not** delete existing bundles. Do not edit Web and Desktop in the same pass.
+Use this when the command fails, `dsh` is not on `PATH`, or you do not want a remote install. Edit **only the profile for the host you are using**. Do **not** delete existing bundles. Do not edit Web and Desktop in the same pass.
 
 **0. Pick one host, one profile**
 
@@ -406,7 +441,7 @@ git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/dsh-pu
 Without git, download [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz), extract it, rename `dsh-purge-master` to `dsh-purge`, and place that folder under `plugins`. PowerShell example (set `$home` to the path from step 1):
 
 ```powershell
-$home = "D:\DeepSeek Harness\.dsh"
+$home = $(if ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE ".dsh" })
 $plugins = Join-Path $home "plugins"
 New-Item -ItemType Directory -Force -Path $plugins | Out-Null
 $tmp = Join-Path $env:TEMP "dsh-purge-master.tar.gz"
@@ -488,7 +523,7 @@ Notes:
 
 **4. Run `pnpm install` only in the profile you just edited**
 
-`pnpm` must be available (official `dsh` usually ships it). `cd` into **that profile directory**, not the repo root and not `$DSH_HOME` itself.
+`pnpm` must be available (official `dsh` usually ships it). `cd` into **that profile directory**, not the repo root and not `$DSH_HOME` itself. Run only the block for your host. Do not run all three.
 
 ```sh
 cd "$DSH_HOME/profiles/web"
@@ -507,8 +542,8 @@ PowerShell (use the home from step 1):
 cd "$env:USERPROFILE\.dsh\profiles\web"
 # cd "$env:USERPROFILE\.dsh\profiles\desktop"
 # cd "$env:USERPROFILE\.dsh\profiles\default"
-# portable example:
-# cd "D:\DeepSeek Harness\.dsh\profiles\web"
+# portable install: point DSH_HOME at that .dsh, do not hardcode a drive:
+# cd "$env:DSH_HOME\profiles\web"
 pnpm install
 ```
 
@@ -525,13 +560,13 @@ Common failures:
 Writing `package.json` does **not** patch `@deepseek-ai` by itself. Restart, then click **Apply**.
 
 1. Fully quit the host you just installed into: stop `dsh web`; quit the community Desktop tray and open `DSH Desktop.exe`; quit the official EXE tray as well
-2. Open **that host’s** Settings page. **Rules** should appear. Ctrl+F5 if cached
+2. Open **that host**. **dsh-purge** should appear beside the session title. Open it to reach Clean.
 3. Click **Apply** on this host only, or run `/purge apply` in chat. Do not Apply Web from Desktop or Desktop from Web
 4. Restart again when prompted so patched packages load in this process. Settings **Restart / Uninstall** relaunch the desktop app; they do not launch `dsh web`
 
 **6. How to confirm it is installed**
 
-- Settings shows the **Rules** card
+- **dsh-purge** sits beside the session title, and **Apply** is on its Clean page
 - `/purge status` prints `DSH_HOME` and the patch list; the path should match step 1
 - `profiles/<name>/node_modules/dsh-purge` points at `plugins/dsh-purge`
 
@@ -539,7 +574,7 @@ If the card is missing, you likely edited the other `.dsh`, or you edited `web` 
 
 ### Uninstall
 
-Settings → **Rules** → **Uninstall**. Confirm the dialog: uninstall restores the original Harness and removes this plugin. If patches were applied, they are reverted first. The current host then restarts (Web relaunches `dsh web`; community Desktop relaunches `DSH Desktop.exe`).
+**dsh-purge** beside the session title → **Clean** → **Uninstall**. Confirm the dialog: uninstall restores the original Harness and removes this plugin. If patches were applied, they are reverted first. The current host then restarts (Web relaunches `dsh web`; community Desktop relaunches `DSH Desktop.exe`).
 
 ```sh
 # or from a terminal
@@ -567,35 +602,23 @@ Plugin config lives in `cordis.patch.yml`:
 
 ---
 
-## What this is
-
-**dsh-purge** is a settings plugin for [DeepSeek Harness](https://www.deepseek.com/harness/):
-
-- Updates default copy, permission policy, and tool limits in the installed `@deepseek-ai/*` packages
-- Adds a **Rules** card: grouped patches, Apply / Restore / Uninstall, session override editor, multiple rule sets
-- Re-applies on start after an npm upgrade overwrites `node_modules`
-- No hardcoded drive letters: `$DSH_HOME`, `.dsh` next to the dsh launcher, then `~/.dsh`
-
-It does not patch the Harness source tree. Use **Apply** on the settings page. Identity comes only from your `prompt-inject.md` — the plugin does not author a second identity card.
-
----
-
-## 0.1.5 notes
-
-| Symptom | Patch | What it does |
-|---|---|---|
-| Picking a workspace / new chat wipes to empty | `#4` `#28` `#39` | 0.1.5 `dsh-persona` requires `prefix`; old presets still send `text`. Alias `text` → `prefix` so 0.1.2 presets (liangshen) can mount |
-| History: `summary requires notice form` | `#40` | `dsh-session-format-v0-to-v1` allows mnemon `instructions` / `recall` sources to carry `summary` |
-| “Who are you” falls back to DeepSeek assistant | inject file | No second identity. The `dsh-purge` section is verbatim `prompt-inject.md` |
-| Liangshen turn 1 looks uninjected | `#29` | phase-1 keeps persona / persona-prefix / persona-suffix plus inject; official tool catalog stays isolated |
-
-`#20` / `#21` / `#28` / `#29` remain optional plugin rows: skip if those packages are absent.
-
----
-
 ## Preview
 
-The **Rules** card appears on the dsh web settings page. Switch **Light / Ink**. Patches are grouped; the count only includes items that actually applied. Rule sets sit in a list above the editor, with Enable and Delete on each row.
+**dsh-purge** sits beside the session title. It opens a right-hand dock with two pages: **Clean** and **Drill**. Switch **Light / Ink**. Patches are grouped; the count only includes items that actually applied. Rule sets sit in a list above the editor, with Enable and Delete on each row.
+
+The first time you open Drill you read the notice, wait out the countdown, scroll to the end, and check three boxes. Clean does not need that step. Drill is only for a host you manage, an offline target, or an exercise that already has written authorization.
+
+**Clean**
+
+![Clean](docs/preview/dock-clean.png)
+
+**Drill authorization**
+
+![Drill authorization](docs/preview/dock-auth.png)
+
+**Drill**
+
+![Drill](docs/preview/dock-drill.png)
 
 **Patches**
 
@@ -607,10 +630,14 @@ The **Rules** card appears on the dsh web settings page. Switch **Light / Ink**.
 
 | Area | What it shows |
 |---|---|
+| dsh-purge | button beside the session title; opens or collapses the dock |
+| Clean | the old Rules page: patches, prompt, rule sets, skills |
+| Drill | assets, skills, and environment after authorization. The tab says Unauthorized until then |
 | Light / Ink | card appearance |
 | Patches | grouped status, Apply, Restore, or Uninstall |
 | Prompt | edit `prompt-inject.md` as the session override |
 | Rule sets | multiple `AGENTS.md` / `CLAUDE.md`; Enable writes under `$DSH_HOME`, Delete removes the row |
+| Skills | import a zip or folder into this host’s official `$DSH_HOME/skills/<id>/SKILL.md` (web and desktop each use their own home; no drive letter is hardcoded); DSH owns match, load, and `/name`. You can also delete that folder yourself |
 
 ---
 
@@ -624,9 +651,13 @@ dsh-purge/
 ├── docs/
 │   ├── banner.svg
 │   └── preview/
+│       ├── dock-auth.png
+│       ├── dock-clean.png
+│       ├── dock-drill.png
 │       ├── rules.png
 │       └── settings.png
 ├── lib/
+│   ├── redteam/
 │   ├── child-process-hide.mjs
 │   ├── core.js
 │   ├── hide-console.js
@@ -635,9 +666,12 @@ dsh-purge/
 │   ├── restart-web.js
 │   ├── rewind.js
 │   ├── rules.js
+│   ├── skills.js
 │   ├── uninstall-restart.js
 │   ├── uninstall.js
 │   └── update.js
+├── presets/redteam/
+├── skills/redteam/
 ├── package.json
 ├── screenshots.json
 ├── LICENSE
@@ -645,18 +679,7 @@ dsh-purge/
 └── README.zh-CN.md
 ```
 
-Runtime user files: `$DSH_HOME/prompt-inject.md`, `$DSH_HOME/rules/`. If `DSH_HOME` is unset, the launcher-adjacent `.dsh` wins over `~/.dsh`.
-
----
-
-## Verify
-
-- After restart, the **Rules** card is on the settings page. Hard-refresh (Ctrl+F5) if the client bundle is cached.
-- Click **Apply**, then **Restart** when prompted. Optional packages (liangshen / web-fetch) show as missing/skipped and do not block complete → restart.
-- Until the user saves a different prompt, `prompt-inject.md` stays the built-in default.
-- `/purge status` prints `DSH_HOME` and the patch list.
-- On 0.1.5, selecting an existing workspace should restore the session — not wipe to an empty workspace.
-- Skipped items are expected when a target file is absent (for example #20 / #21 without `dsh-web-fetch-http`).
+Runtime user files: `$DSH_HOME/prompt-inject.md`, `$DSH_HOME/rules/`, `$DSH_HOME/skills/`. If `DSH_HOME` is unset, the launcher-adjacent `.dsh` wins over `~/.dsh`. Skills are not part of the `dsh-purge` inject section and do not replace the prompt.
 
 ---
 
@@ -671,14 +694,15 @@ dsh-purge --edit
 
 /purge status | apply | revert | uninstall | edit | help
 /rules list | use <id> | create <id> | delete <id> | reset | help
+/skills list | import <zip-or-folder> | create <id> [description] | delete <id> | help
 /rewind
 
 purge_status   purge_apply   purge_revert
 ```
 
-Patched packages load only after a restart. Apply does not restart by itself. Under the patch title, **Stable** and **Beta** sit in two columns, each with its own version list.
+Patched packages load only after a restart. Apply does not restart by itself. Under the patch title is the stable release: you can see versions and switch. A rollback is pinned; click **Update** to return to the latest. The beta channel is gone.
 
-The composer **Undo** button drops the last turn and puts the last user sentence back in the input. On the main agent you can rewind once or the whole last round (including subagents). After rewind, send only what is in the box now. `/rewind` does the same.
+The composer **Undo** button drops the last turn and puts the last user sentence back in the input. On the main agent you can rewind once or the whole last round (including subagents). After rewind, send only what is in the box now. `/rewind` does the same. The host cannot truncate a session in place, so rewind opens another session for the shortened transcript and removes the old one from the sidebar. Repeating undo does not leave a stack of branches in the list.
 
 ---
 
@@ -692,6 +716,7 @@ node --check lib/web.js
 node --check lib/desktop.js
 node --check lib/host.js
 node --check lib/rewind.js
+node --check lib/skills.js
 node --check client.js
 ```
 
@@ -699,36 +724,37 @@ node --check client.js
 
 ## How it works
 
-**Apply (on start or by hand):**
+Apply, on start or when you click Apply:
 
-```
-patch not applied? ──no──> skip
-    │yes
-    ├─> backup <file>.dshpurge.bak (Desktop host-commands backups stay under `$DSH_HOME/dsh-purge/shim-backups` only)
-    ├─> apply matching replacements
-    ├─> override shim (dsh.cmd / dsh.ps1 / unix dsh; **skip Desktop sealed host-commands bins**)
-    ├─> scrub illegal sibling `*.dshpurge.bak` inside sealed bins (Desktop validates before plugins load)
-    ├─> Windows: pin hide-console + child_process import hook; patch subprocess-local / doctor / market / liangshen bash
-    └─> if the user has not replaced the prompt, write/refresh the built-in default
-```
-
-**Override (each session):**
-
-```
-prompt-inject.md has content? ──yes──> write it verbatim as the dsh-purge systemPrompt section
-           │no
-           └─> no override section
+```mermaid
+flowchart TD
+  A["Start or click Apply"] --> B{"Patch already in place?"}
+  B -->|yes| C["Skip"]
+  B -->|no| D["Back up the original as .dshpurge.bak"]
+  D --> E["Replace the matched files"]
+  E --> F["Override the shim"]
+  F --> G{"User edited the prompt?"}
+  G -->|no| H["Write the built-in default prompt"]
+  G -->|yes| I["Keep the current prompt-inject.md"]
 ```
 
-**Identity (1.3.6):** the plugin does not invent an “operator / LCS” second persona. Official Harness identity lines are stripped; `prompt-inject.md` is the identity. On 0.1.5 the inject is folded into `persona-prefix` so liangshen phase-1 cannot drop it.
+Override on each session:
 
-**Windows CMD silence:** on Node 24, `import { spawn } from "node:child_process"` is not a live binding. `registerHooks` redirects `node:child_process` to a `windowsHide` facade; `@deepseek-ai/dsh-subprocess-local` also gets `windowsHide: true`. Doctor relaunch uses `node + bin.js` and does not leave a noop `supervisor.cmd`.
+```mermaid
+flowchart TD
+  A["New session"] --> B{"prompt-inject.md has text?"}
+  B -->|yes| C["Write it verbatim into the dsh-purge systemPrompt section"]
+  B -->|no| D["Do not write an override section"]
+```
 
-**Liangshen phase-1:** the default preset strips non-persona system-prompt sections. Apply / startup keeps persona, persona-prefix, persona-suffix, and inject (tool quarantine unchanged).
+Skills stay out of the inject section:
 
-**DSH Desktop (anywhere-labs/dsh-desktop, issue #9):** `host-commands/<profile>/bin` is sealed — no sibling extras (including `dsh.cmd.dshpurge.bak`). This plugin scrubs only (no inject, no bak writes).
-
-**Prompt security eval:** over-refusal and anti-eval-persona wording in `minimal`, official `standard` / `ptc` / `cordis`, and liangshen personas is rewritten so controlled security evaluations can complete. No fixed role name is locked in.
+```mermaid
+flowchart LR
+  A["Settings import or /skills import"] --> B["Write into the official skills directory"]
+  B --> C["DSH loads it"]
+  C --> D["Uninstall does not delete user skills"]
+```
 
 ---
 
@@ -768,109 +794,14 @@ If nothing is found, set `DSH_BASE` / `DSH_DESKTOP_INSTALL`. No files are change
 
 ---
 
-## Changelog
+## Releases
 
-### 1.3.0
-
-- Rebased onto upstream 1.1.11 — keeps upstream's security fix (local endpoints reject
-  cross-site requests, updates accept only known refs), the once-per-turn prompt injection
-  fix (#29), empty-prompt interception, and the Stable / Beta split.
-- **Critical fix (DSHA / Android):** `applyRuntimeEnv()` deleted `DSH_PERMISSION_MODE` from
-  `process.env` when its value was `danger-full-access`. Because that helper runs
-  unconditionally at plugin load, it stripped the variable from the live process; the two
-  dsh-base permission rows both read it, fell back independently, and could compose an
-  `(sandbox, approval)` pair matching no entry in the `dsh-permission-presets` table —
-  making dsh refuse to start with `composed sandbox and approval defaults match no preset`.
-  The helper now only reports the environment. Regression test: `test/permission-env.test.js`.
-- DSHA host detection: `DSHA_APP=1`, plus any DSHA-only variable for older builds, so the
-  plugin never falls back to standalone-Web behaviour inside the Android container.
-- Restored the `dsha` host adapter (`lib/dsha.js`) and the `surface.dsha` label, which
-  upstream does not ship.
-
-### 1.1.11
-
-- Settings splits Stable / Beta into two columns, each with its own list, switch, and rollback. 1.1.10 can reach this by Check update.
-- **No Skill import.** Skill stays on beta 1.1.12.
-- **#29:** Stop pinning the previous full system prompt. That pin was meant to stop a new「系统提示词」card each step, but presets that append a section every assemble (梁神 `workspace-instructions`) turned it into “last full prompt + this step’s block”, so the prompt grew every step and prefix cache missed. Later turns only fold `prompt-inject` into persona, and do not fold a second copy when it is already there.
-- The version list marks「当前」by commit. An older tag with the same 1.1.11 version is no longer current next to `master`.
-- Local routes reject cross-origin requests, and updates only accept a known ref. Another webpage cannot apply, revert, uninstall, or switch.
-- Patch #41 no longer keeps the `dsh-purge:committed` shortcut. Hosts that already applied the old patch need one more Apply to remove it.
-
-### 1.1.10
-
-- Saving or applying with both the prompt and the rule set empty is blocked and shows a dialog
-- First-turn inject is complete; later turns no longer pin the previous full system prompt
-
-### 1.1.9
-
-- Removed the default prompt from the repository
-
-<details>
-<summary>Earlier versions</summary>
-
-### 1.1.8
-
-- Until the user saves a different prompt, the built-in default is used. Settings can restore the default.
-
-### 1.1.7
-
-- **#25:** After the first turn, do not pin the previous full system prompt. Inject `prompt-inject.md` once; later turns leave this turn’s other sections as assembled.
-- **#26:** `dsh plugin add` / in-app update use GitHub `master.tar.gz`. A `.zip` URL is not a pnpm tarball (`ERR_PNPM_TARBALL_DECODE_GZIP`). Local overlay still downloads the zip for `tar` / Expand-Archive.
-- Install docs split **Web / Desktop** defaults: Web uses official `dsh --profile web`; Desktop uses the built-in terminal `dsh plugin add <tar.gz>`.
-- Desktop Apply / Restart / Uninstall only touch the running desktop install tree, not official Web / npm-global.
-- Desktop package root follows the running `DSH Desktop.exe` (default or custom install folder).
-
-### 1.1.6
-
-- Settings **Uninstall** asks for confirmation, restores applied patches, then removes the plugin and restarts.
-- The AI-assistant install block is install-only: no disk scan, no apply.
-- Separate install commands for official Web / official EXE / community DSH Desktop. Desktop **Restart / Uninstall** relaunch `DSH Desktop.exe`.
-
-### 1.1.5
-
-- Manual Update: if `git pull --ff-only` fails, fetch + reset to `origin/master`, then zip overlay.
-
-### 1.1.4
-
-- Update check reads `package.json` at the GitHub commit SHA, instead of the stale jsDelivr `@master` cache or falling back to the local version.
-
-### 1.1.3
-
-- Prompt inject once on the first turn; later turns pin the committed system prompt instead of appending a second copy.
-- Strip bundled `dsh-mnemon` context rows by default.
-- Switching back from a subagent no longer puts the last sent message into the composer.
-- Export a Cordis `{ apply }` default so the plugin tree can load.
-
-### 1.1.2
-
-- Custom OpenAI-compatible APIs no longer 400 on `developer` role: `#42` remaps it back to `system`.
-- Settings rule sets: read / delete / save go through one POST so the browser no longer fails with `Failed to fetch`.
-
-### 1.1.1
-
-- Composer **Undo** / `/rewind`: main agent can rewind once or the last round (drop this round’s subagents); a subagent rewinds once.
-- After rewind, the input box keeps the last user sentence, but sending again is a new turn — leftover inbox is cleared so the old prompt is not auto-sent.
-- Optional unmatched patches count as skipped, not failed.
-
-### 1.1.0
-
-- Check update and download share one button: after a check, it becomes **Update** and the pill shows the remote version.
-- Startup auto-checks GitHub `master` and downloads. `dsh plugin add` (zip / github) uses the official CLI; machines without git overlay `master.zip`. Uncommitted files in a git checkout are not auto-overwritten.
-- **#16:** `#26` no longer applies bare identity replacements to YAML; apply rewrites `prefix`/`text` fold indent so the cordis preset mounts.
-- **#15:** If there is text but it never reaches the model, 0.1.5 `complete:true` was dropping every section after assemble; `#41` folds inject back into the complete prompt.
-- **#14:** Hub `api/plugins/download` is not a tarball; install from GitHub `master.zip` only.
-
-### 1.0.0
-
-- Version numbering reset.
-- Settings: **Check update** reads GitHub `master`.
-
-</details>
+What changed, and the zip, are on [Releases](https://github.com/YuJunZhiXue/dsh-purge/releases). To publish, bump the version in `package.json`, write Chinese and English notes in `release-notes.md`, and push `master`. Pushing the same version again does not publish another package.
 
 ## Notes
 
 - Scope is rendered copy, defaults, and runtime logic inside local `@deepseek-ai/*` packages, plus override files and rule sets under the harness home.
-- After an upgrade, unmatched originals surface as `pattern_not_found` or pending.
+- After an upgrade, unmatched originals show as skipped. Apply still completes, and those files are left unchanged.
 - Third-party plugin *source repos* outside `@deepseek-ai` are left alone (CMD silence may **best-effort** patch installed doctor / market / liangshen / mnemon at runtime).
 - The npm package name is not published yet. Install from GitHub, the [Hub](https://deepseek.stream/plugins/dsh-purge), or `dsh plugin add .`.
 

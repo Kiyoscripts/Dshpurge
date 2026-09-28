@@ -1,7 +1,7 @@
 {
   "name": "dsh-purge",
-  "version": "1.3.0",
-  "description": "DeepSeek Harness 网络安全红队工具：本机官方 Harness 受控评测与清洗，不同模型可换不同提示词；默认提示词面向国模「小码酱」。求 Star ⭐",
+  "version": "1.4.0",
+  "description": "DeepSeek Harness 网络安全红队工具：本机官方 Harness 受控评测与清洗，内嵌演练台；不同模型可换不同提示词；默认提示词面向国模「小码酱」。求 Star ⭐",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -9,8 +9,12 @@
       "default": "./lib/index.js"
     },
     "./client": "./client.js",
-    "./package.json": "./package.json",
-    "./dsha": "./lib/dsha.js"
+    "./redteam": "./lib/redteam/index.js",
+    "./redteam/store": "./lib/redteam/store.js",
+    "./redteam/ui": "./lib/redteam/ui.js",
+    "./redteam/tools": "./lib/redteam/tools.js",
+    "./dsha": "./lib/dsha.js",
+    "./package.json": "./package.json"
   },
   "bin": {
     "dsh-purge": "bin/dsh-purge.js"
@@ -20,6 +24,9 @@
     "!lib/default-prompt-inject.md",
     "bin",
     "docs",
+    "presets",
+    "skills",
+    "scripts",
     "client.js",
     "cordis.patch.yml",
     "screenshots.json",
@@ -29,8 +36,17 @@
   ],
   "scripts": {
     "embed-prompt": "node scripts/embed-default-prompt.mjs",
+    "build:client": "node scripts/build-client.mjs",
     "test:identity": "node scripts/test-identity-assembly.mjs",
-    "test:update": "node scripts/test-update-guards.mjs"
+    "test:yaml": "node scripts/test-yaml-comment.mjs",
+    "test:update": "node scripts/test-update-guards.mjs",
+    "test:zip": "node scripts/test-zip-extract.mjs",
+    "test:templates": "node scripts/test-template-page.mjs",
+    "test:rewind": "node scripts/test-rewind-plan.mjs",
+    "test:idempotence": "node scripts/test-patch-idempotence.mjs",
+    "test:surface": "node scripts/test-surface-desktop.mjs",
+    "test:profile-patch": "node scripts/test-user-profile-patch.mjs",
+    "test:dsha-surface": "node --test test/dsha-surface.test.js test/permission-env.test.js test/identity-assemble.test.js test/update-spec.test.js"
   },
   "license": "MIT",
   "keywords": [
@@ -77,5 +93,5 @@
   "engines": {
     "node": ">=18"
   },
-  "dshTarget": "0.1.5-rc.2"
+  "dshTarget": "0.1.7-rc.2"
 }

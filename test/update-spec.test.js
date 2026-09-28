@@ -12,8 +12,11 @@ describe("pluginAddSpec", () => {
     assert.equal(pluginAddSpec("https://example.invalid/dsh-purge.tgz"), TARBALL_URL);
   });
 
-  it("keeps github: specs for git install", () => {
-    assert.equal(pluginAddSpec("github:YuJunZhiXue/dsh-purge#master"), "github:YuJunZhiXue/dsh-purge#master");
+  it("maps github: specs to the codeload tarball (no git ls-remote needed)", () => {
+    assert.equal(
+      pluginAddSpec("github:YuJunZhiXue/dsh-purge#master"),
+      TARBALL_URL,
+    );
     assert.equal(pluginAddSpec(""), "");
   });
 });

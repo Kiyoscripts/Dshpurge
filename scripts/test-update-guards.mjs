@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { markCurrent, safeUpdateRef } from "../lib/update.js";
+import { hideListedVersion, latestStableVersion, markCurrent, pluginAddSpec, safeUpdateRef } from "../lib/update.js";
 
 assert.equal(safeUpdateRef("master"), "master");
 assert.equal(safeUpdateRef("beta"), "beta");
@@ -10,6 +10,12 @@ assert.equal(safeUpdateRef("--hard"), "");
 assert.equal(safeUpdateRef("origin/master"), "");
 assert.equal(safeUpdateRef("../evil"), "");
 assert.equal(safeUpdateRef("master;rm"), "");
+
+const masterTar = "https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master";
+assert.equal(pluginAddSpec("git+https://github.com/yujunzhixue/dsh-purge.git", "master"), masterTar);
+assert.equal(pluginAddSpec("github:yujunzhixue/dsh-purge", "master"), masterTar);
+assert.equal(pluginAddSpec("https://codeload.github.com/YuJunZhiXue/dsh-purge/zip/refs/heads/master", "master"), masterTar);
+assert.equal(pluginAddSpec("dsh-purge", "master"), "");
 
 const head = "9397203733562d6baeec9e38ac519698c619edcb";
 const tag = "5e6be24acc3e5aac981c701cc34ef710ce48c4c7";
@@ -24,5 +30,26 @@ assert.equal(marked.find((item) => item.ref === "v1.1.11").current, false);
 const onTag = markCurrent(versions, { channel: "stable", pin: "v1.1.11" }, "1.1.11", tag);
 assert.equal(onTag.find((item) => item.ref === "v1.1.11").current, true);
 assert.equal(onTag.find((item) => item.ref === "master").current, false);
+
+const caughtUp = [
+  { ref: "master", version: "1.1.12", channel: "stable", latest: true },
+  { ref: "v1.1.12", version: "1.1.12", channel: "stable" },
+  { ref: "v1.1.12-beta.1", version: "1.1.12-beta.1", channel: "beta" },
+  { ref: "beta", version: "1.1.12-beta.1", channel: "beta", latest: true },
+  { ref: "v1.1.13-beta.1", version: "1.1.13-beta.1", channel: "beta" },
+];
+const ceiling = latestStableVersion(caughtUp);
+assert.equal(ceiling, "1.1.12");
+assert.equal(hideListedVersion(caughtUp[2], ceiling), true);
+assert.equal(hideListedVersion(caughtUp[3], ceiling), true);
+assert.equal(hideListedVersion(caughtUp[4], ceiling), true);
+assert.equal(hideListedVersion({ ref: "v1.1.11-beta.1", version: "1.1.11-beta.1", channel: "beta" }, ""), true);
+
+const visible = caughtUp.filter((item) => !hideListedVersion(item, ceiling));
+assert.deepEqual(visible.map((item) => item.ref), ["master", "v1.1.12"]);
+const staleSha = "423a91614baa747b56749003d054fedb8e725714";
+const shown = markCurrent(visible, { channel: "stable", pin: "" }, "1.1.12", staleSha);
+assert.equal(shown.find((item) => item.ref === "master").current, true);
+assert.equal(shown.find((item) => item.ref === "v1.1.12").current, false);
 
 console.log("ok: update guards");
