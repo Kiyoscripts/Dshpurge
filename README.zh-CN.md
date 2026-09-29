@@ -4,7 +4,7 @@
 
 <h1 align="center">⚔️ DeepSeek Harness 网络安全红队工具（dsh-purge）</h1>
 
-<p align="center"><strong>Version 1.1.34</strong></p>
+<p align="center"><strong>Version 1.1.39</strong></p>
 
 <p align="center">
   <em>本机官方 DeepSeek Harness 网络安全红队评测插件。清洗宿主策略，并带内嵌演练台。不同模型可换不同提示词。默认提示词面向国模「小码酱」。求 Star 收藏 ⭐</em>
@@ -137,7 +137,7 @@ DSHA 也接受旧的 `.zip` 归档地址，但优先用仓库地址。安装后�
 
 宿主判定：DSHA 会注入 `DSHA_APP=1`，同时还有 `DSH_HOME` / `DSHA_WEB_GENERATION` / `DSHA_STARTUP_PROFILE`。对没有注入 `DSHA_APP` 的旧版 DSHA，插件也接受任意 DSHA 专属变量作为宿主旁证，因此在 Android 容器里不会退回独立 Web 的行为（改写启动器、自行重启 Web、自我更新）。显式设置 `DSH_SURFACE` 仍然优先。
 
-`autoApplyOnStart` / `autoUpdateOnStart` 在 DSHA 上保持 `true` 是刻意的：二者都会在改写任何文件前被宿主判定短路（`autoApply` 返回 `skip:dsha_manual_apply_required`，更新器返回 `skipped:host_managed`）。关掉开关并不能多一层保护，反而会让 Web / 桌面端失去自动应用与自动更新。由于 DSHA 启动阶段不自动应用，规则卡片会明确提示手动「应用」，最近一次启动决策以 `auto_apply` 暴露在状态负载里。
+在 DSHA 上，两条启动自动化都会在改写任何文件前被宿主判定短路：`autoApply` 返回 `skip:dsha_manual_apply_required`，更新器返回 `skipped:host_managed`。也就是说，无论开关取值如何，DSHA 的启动路径都不会改写自己的 loader 树 —— 这层保护不依赖开关，因此没有理由为了「保护 DSHA」去关掉它们（那只会让 Web / 桌面端失去自动应用）。由于 DSHA 启动阶段不自动应用，规则卡片会明确提示手动「应用」，最近一次启动决策以 `auto_apply` 暴露在状态负载里。
 
 #### 权限预设：不要删除 `DSH_PERMISSION_MODE`
 
@@ -591,7 +591,7 @@ dsh-purge --uninstall
       config:
         enabled: true
         autoApplyOnStart: true
-        autoUpdateOnStart: true
+        autoUpdateOnStart: false
         autoRevertOnMissing: false
         verbose: false
         postPromptOrder: 5100
@@ -795,6 +795,19 @@ flowchart LR
 - 升级后原文对不上会显示跳过，这次应用仍算完成，不会乱改。
 - 不改动非 `@deepseek-ai` 的第三方插件源仓库（启动时的 CMD 无感会**尽力**修补已装的 doctor / market / 梁神 / mnemon，属运行时补丁）。
 - npm 上暂未发布同名包，用 GitHub、[插件市场](https://deepseek.stream/plugins/dsh-purge) 或 `dsh plugin add .` 安装。
+
+---
+
+## ☕ Sponsor
+
+If this project helps you, send it over — I'm out here asking~
+
+| Asset | Address |
+| --- | --- |
+| USDT (TRC20) | `TV5ajPkRD8RH623Dx9mqvYZVNN8nPGRKid` |
+| Solana | `6x16GhRgLVpKFFXaU1seKNdx2rypspSJTL4dbpt6Xpwk` |
+| Ethereum | `0xB68BD60C0e8c519513B7DF9bB147696815423B3E` |
+| Bitcoin | `bc1qu70yxkrtwnymt8ryluz9x8y8hqzune5340npht` |
 
 ---
 

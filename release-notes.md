@@ -1,18 +1,107 @@
-# 1.4.0
+# 1.4.1
 
 ## 中文
 
-- **合并上游 1.1.34 全部更新**，并继续保留 DSHA（Android）宿主支持。
-- **新增 WAF 拦截页分类（patch id 46）**：CDN/WAF（Cloudflare、Render）返回的 403 拦截页是完整 HTML，不是 JSON API 应答。先前实现从任意文本里用正则抠出 401/403 数字就判 `AUTH`，于是 UI 会把 WAF 拦截误报成「API key is invalid」。现在 HTML 拦截页归类为 `BLOCKED`，并截断成一行摘要（含 HTTP 状态与 WAF 请求 ID）；只有干净的状态行才可能判定为密钥错误。
-- 修正一个因上游引入、旧版从未带上线的回归测试：`github:` 安装规格现在统一走 `codeload` tar.gz（无需本机 git），`test/update-spec.test.js` 已同步。
-- 新增 `test/waf-classifier.test.js` 回归测试，锁定 patch id 46 的行为：WAF 页 → `BLOCKED`，裸状态行 → `AUTH`，其它 HTML → 非 AUTH。
+- **合并上游 1.1.35 → 1.1.39 全部更新**，并继续保留 DSHA（Android）宿主支持。
+- 上游本轮的实质修复：中文 Windows 官方桌面版点「安装并重启」不再卡在「正在准备重启」（更新脚本首行纯 ASCII，非 ASCII 路径写成 `\u` 转义，避免 Windows Script Host 按 GBK 吞掉换行）；红队引导不再替用户下载工具，缺 `setup.sh` 时改走环境适配；红队守住目标与模式显示修复；技能路径跟随安装目录；演示台环境配置滚动修复。
+- **补丁编号避让**：上游 1.1.39 新增代码补丁 `id: 46`（`OFFICIAL_DESKTOP_UPDATE_ASCII`）。本 fork 的 WAF 分类补丁由 46 顺延为 **`id: 47`**，两者互不覆盖。
+- **上游删除的内置测试脚本不再随仓库分发**：1.1.39 移除了 `scripts/test-*.mjs` 与其 `package.json` 入口。本 fork 自己的 DSHA 回归用例（`test/*.test.js`）不受影响，改用 `npm run test:dsha` 运行。
+- **`autoUpdateOnStart` 默认值跟随上游改为 `false`**。DSHA 的宿主短路判定与开关取值无关，安全性不受影响；DSHA 相关说明文字已同步更新，不再声称两项开关必须保持 `true`。
+- 继续保留 WAF 拦截页分类（`id: 47`）：CDN/WAF（Cloudflare、Render）的 403 拦截页是完整 HTML，不是 JSON 应答。原实现从任意文本里正则抠 401/403 就判 `AUTH`，UI 因而误报「API key is invalid」。现在 HTML 拦截页归 `BLOCKED` 并截断成一行摘要（含 HTTP 状态与 WAF 请求 ID）；只有干净的状态行才可能判定为密钥错误。
 
 ## English
 
-- **Merge all upstream 1.1.34 changes** and keep the DSHA (Android) host support. This fork version line now sits above upstream, so the device update prompt fires. `dshTarget` is set to `0.1.7-rc.2` to match upstream.
-- **New WAF block classifier (patch id 46)**: CDN/WAF (Cloudflare, Render) 403 block pages are full HTML, not a JSON API reply. The previous implementation scraped `401`/`403` out of any text and reported `AUTH`, so the UI blamed "API key is invalid" for what was really an edge WAF rejection. HTML block pages now classify as `BLOCKED` and are truncated to one summary line (HTTP status + WAF request id); only a bare status line can mean a bad key.
-- Fixed a regression test that upstream's new behavior made stale: `github:` install specs now go through the `codeload` tarball (no local git needed); `test/update-spec.test.js` updated to match.
-- Added `test/waf-classifier.test.js` to pin patch id 46: block page → `BLOCKED`, bare status line → `AUTH`, other HTML → not AUTH.
+- **Merge all upstream 1.1.35 → 1.1.39 changes** while keeping DSHA (Android) host support.
+- Upstream fixes in this range: on Chinese Windows the official desktop install-and-restart no longer stalls on "preparing to restart" (the update script starts with a pure-ASCII comment and writes non-ASCII paths as `\u` escapes, so Windows Script Host no longer swallows newlines as GBK); the redteam onboarding no longer downloads tools on the user's behalf and falls back to environment adaptation when `setup.sh` is missing; redteam target-holding and mode-display fixes; skill paths follow the install directory; drill-platform config scroll fix.
+- **Patch ID avoidance**: upstream 1.1.39 added code patch `id: 46` (`OFFICIAL_DESKTOP_UPDATE_ASCII`). This fork's WAF classifier patch moves from 46 to **`id: 47`** so the two do not collide.
+- **Upstream's removed built-in test scripts are no longer shipped**: 1.1.39 deleted `scripts/test-*.mjs` and their `package.json` entries. This fork's own DSHA regression tests (`test/*.test.js`) are unaffected and run via `npm run test:dsha`.
+- **`autoUpdateOnStart` now defaults to `false`**, following upstream. The DSHA host short-circuit does not depend on the switch, so safety is unchanged; the DSHA documentation was updated and no longer claims both switches must stay `true`.
+- The WAF block classifier is retained as `id: 47`: CDN/WAF (Cloudflare, Render) 403 block pages are full HTML, not a JSON reply. The previous implementation scraped `401`/`403` out of any text and reported `AUTH`, so the UI blamed "API key is invalid" for what was really an edge WAF rejection. HTML block pages now classify as `BLOCKED` and are truncated to one summary line (HTTP status + WAF request id); only a bare status line can mean a bad key.
+
+# 1.1.39
+
+## 中文
+
+- 版本升级到 1.1.39。
+- 中文 Windows 上，官方桌面版点「安装并重启」不再停在「正在准备重启」。更新脚本首行改为纯 ASCII，路径里的中文写成 `\u` 转义，避免 Windows Script Host 按 GBK 把换行吞进注释。
+- macOS 和 Linux 不走这条脚本，重启方式不变。
+
+## English
+
+- Version 1.1.39.
+- On Chinese Windows, the official desktop install-and-restart no longer stays on preparing to restart. The update script starts with an ASCII comment, and non-ASCII paths are written as `\u` escapes, so Windows Script Host does not swallow the newline when it reads the file as GBK.
+- macOS and Linux do not use this script. Their restart path is unchanged.
+
+# 1.1.38
+
+## 中文
+
+- 版本升级到 1.1.38。
+- 红队不再替用户下载工具。没有安装脚本时，引导改走演练台「环境适配」，由用户自己填路径。
+- 长时间任务会在系统提示词里放一张「本次目标」卡。指挥和子代理看的是同一张：只打这个单位，回报里带出来的其它单位不打。子代理按角色使用自己的提示词，派活时的单位名称必须和这张卡一致。
+- 工具查找认发行版上的真实文件名，例如 Kali 的 `httpx-toolkit`、`impacket-secretsdump`，不再把 Python 的 `httpx` 当成扫描器。
+- 官方桌面在 macOS、Linux 上也能找到 `app.asar`（Mac 用 `Contents/Resources`）。Windows 以外不再包一层会把 `require` 弄坏的控制台隐藏。
+- 红队接入锚点门：开头几步输出上限 1024；第一段思考里有 `we`、没有 `let me` 就放开，否则同一轮最多再走 4 步。上下文压缩后再关一次。红队工具和人设保持原样。
+- 随包技能同步到 `$DSH_HOME/redteam/skills`，预设用 `dshHomePath` 指向它，不再把某一台电脑的 `node_modules` 路径写进预设。你自己的技能仍在 `$DSH_HOME/skills`，同名以你的为准。
+- 修好红队模式不显示：声明预设时漏了路径变量，插件中途退出，模式下拉就没有这一项。
+- 说明里加回赞助地址。
+
+## English
+
+- Version 1.1.38.
+- Red team no longer downloads tools for you. When the setup script is missing, the guide points at the drill console environment page so you fill in the paths.
+- Long jobs keep a target card in the system prompt. The commander and subagents see the same card: stay on that organization, and do not switch to other names that show up in results. Each subagent loads its own role text, and dispatched work must use the name on the card.
+- Tool lookup accepts distro filenames such as Kali's `httpx-toolkit` and `impacket-secretsdump`, and does not treat Python's `httpx` as the scanner.
+- The official desktop app can find `app.asar` on macOS and Linux (`Contents/Resources` on Mac). Outside Windows, the console-hide wrapper that broke `require` is not installed.
+- Red team uses an anchor gate: the first steps are capped at 1024 output tokens, the cap lifts when the first reasoning block contains `we` and not `let me`, otherwise it lasts at most 4 steps in that turn, and a context compaction closes the gate again. Red team tools and the persona stay as they are.
+- Bundled skills are copied to `$DSH_HOME/redteam/skills` and the preset points there with `dshHomePath`, instead of a machine-specific `node_modules` path. Your own skills stay in `$DSH_HOME/skills` and win on the same name.
+- Red team mode shows in the mode list again. Declaring the preset no longer exits early because a path variable was missing.
+- The sponsor addresses are back in the readme.
+
+# 1.1.37
+
+## 中文
+
+- 版本升级到 1.1.37。
+- 修改演示台环境配置滚动问题。
+
+## English
+
+- Version 1.1.37.
+- The drill console environment page scrolls, so the rest of the settings can be filled in.
+
+# 1.1.36
+
+## 中文
+
+- 版本升级到 1.1.36。
+- 解决红队模式拒绝问题。
+
+## English
+
+- Version 1.1.36.
+- Fix red team mode refusing the cleaned prompt.
+
+# 1.1.35
+
+## 中文
+
+- 版本升级到 1.1.35。
+- 启动时不再自动更新，要自己在面板里选择。
+- dsh-purge 入口改到「上下文」旁边，不再挡住别的插件按钮。
+- 得分口径对齐上游：25 项，Web 应用增加兜底归类。
+- 知识库 14 类计数包含本机 nuclei 模板，点某一类可以筛选。
+- 技能路径跟随 `$DSH_HOME`，不再因为示例路径在本机不存在就把整条技能标成不可用。
+
+## English
+
+- Version 1.1.35.
+- Startup no longer auto-updates; choose the update in the panel.
+- The dsh-purge entry sits beside Context, so it no longer covers other plugin buttons.
+- Scoring matches upstream: 25 items, with a fallback bucket for other web apps.
+- The 14 knowledge categories count local nuclei templates, and a category filters the list.
+- Skill paths follow `$DSH_HOME`. A skill is no longer marked unavailable just because an example path is missing on this machine.
+
 # 1.1.34
 
 ## 中文

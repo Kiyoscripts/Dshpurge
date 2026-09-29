@@ -161,6 +161,14 @@ window.__ModuleLoader__.load({ id: "dsh-purge", factory: (require) => {
 			"auth.ok.tab": "确认授权并进入演练台",
 			"auth.ok.full": "确认授权并全面浏览",
 			"auth.ok.env": "确认授权并打开环境适配",
+			"envGate.title": "环境还没配好",
+			"envGate.lead": "红队模式发送前需要本机工具。未检测到可用环境时，先去环境适配，或确认暂不配置。",
+			"envGate.kaliHint": "检测到 Kali 时会直接用本机工具，不必填路径。没有 Kali 时，在环境适配里填写各工具路径，或选一个整包文件夹自动分配。",
+			"envGate.skip": "暂不配置",
+			"envGate.skipConfirm": "确认后这次可以继续对话。扫描和利用类技能仍会因为缺少工具而不可用，之后可以在 dsh-purge → 环境适配里补路径。",
+			"envGate.skipNo": "返回",
+			"envGate.skipYes": "确认暂不配置",
+			"envGate.go": "去环境适配",
 			"theme.aria": "外观",
 			"theme.white": "白",
 			"theme.ink": "墨",
@@ -400,6 +408,14 @@ window.__ModuleLoader__.load({ id: "dsh-purge", factory: (require) => {
 			"auth.ok.tab": "Authorize and open Drill",
 			"auth.ok.full": "Authorize and open Full view",
 			"auth.ok.env": "Authorize and open Env adapt",
+			"envGate.title": "Environment is not ready",
+			"envGate.lead": "Red team mode needs local tools before you send. If none are available, open Env adapt or confirm you will continue without them.",
+			"envGate.kaliHint": "When Kali is detected, local tools are used directly and paths are optional. Otherwise set each tool path in Env adapt, or pick one toolkit folder to assign them.",
+			"envGate.skip": "Skip for now",
+			"envGate.skipConfirm": "You can keep chatting after this. Scan and exploit skills stay unavailable until the tools are installed. You can add paths later under dsh-purge → Env adapt.",
+			"envGate.skipNo": "Back",
+			"envGate.skipYes": "Continue without tools",
+			"envGate.go": "Open Env adapt",
 			"theme.aria": "Appearance",
 			"theme.white": "Light",
 			"theme.ink": "Ink",
@@ -747,14 +763,16 @@ window.__ModuleLoader__.load({ id: "dsh-purge", factory: (require) => {
 .dshp-dock-body select.dshp-field,.dshp-dock-body .dshp-field.dshp-ver{background:var(--dshp-paper,#2a2926)!important;color:var(--dshp-ink)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color-scheme:dark}
 .dshp-dock-body .dshp-root[data-theme="white"] select.dshp-field,.dshp-dock-body .dshp-root[data-theme="white"] .dshp-field.dshp-ver{background:#fff!important;color:#1a1916!important;color-scheme:light}
 .dshp-dock-body .dshp-root[data-theme="dusk"] select.dshp-field,.dshp-dock-body .dshp-root[data-theme="dusk"] .dshp-field.dshp-ver{background:#32312d!important;color:#e6e2db!important;color-scheme:dark}
-.dshp-dock-body select.dshp-field option,.dshp-dock-body .dshp-field.dshp-ver option{background:#1c1c1c;color:#f2f2f2}
+.dshp-dock-body select.dshp-field option,.dshp-dock-body .dshp-field.dshp-ver option{background:#fff;color:#1a1916}
 .dshp-dock-body .dshp-root[data-theme="white"] select.dshp-field option,.dshp-dock-body .dshp-root[data-theme="white"] .dshp-field.dshp-ver option{background:#fff;color:#1a1916}
 .dshp-dock-body .dshp-title,.dshp-dock-body .dshp-kicker,.dshp-dock-body .dshp-sub h4,.dshp-dock-body .dshp-group-h strong,.dshp-dock-body .dshp-metric b{color:var(--dshp-ink)}
 .dshp-dock-body .dshp-mute,.dshp-dock-body .dshp-metric span,.dshp-dock-body .dshp-group-h em,.dshp-dock-body .dshp-count,.dshp-dock-body .dshp-rule-meta{color:var(--dshp-mute)}
 .dshp-dock-body .rt-dock{position:relative;inset:auto;width:100%!important;height:100%;max-width:none!important;flex:1;min-height:0;min-width:0;display:flex!important;flex-direction:column;box-shadow:none;border:0;transform:none!important;opacity:1!important;pointer-events:auto!important;background:transparent!important;color:#f4f2ec;font-size:13.5px;line-height:1.55;font-weight:450;--rt-ink:#f4f2ec;--rt-mute:#d2ccc0;--rt-surf:color-mix(in srgb,#0c0c0c 42%,transparent);--rt-surf-2:color-mix(in srgb,#0c0c0c 55%,transparent);--rt-line:color-mix(in srgb,#fff 22%,transparent)}
 .dshp-dock-body .rt-grip{display:none!important}
 .dshp-dock-body .rt-embedded>.rt-head,.dshp-dock-body .rt-tabs,.dshp-dock-body .rt-foot{flex:none;background:color-mix(in srgb,#0c0c0c 28%,transparent)!important;color:var(--rt-ink);border-color:var(--rt-line)}
-.dshp-dock-body .rt-body{flex:1;min-height:0;overflow:auto!important;background:transparent!important;color:var(--rt-ink)}
+.dshp-dock-body .rt-body{flex:1;min-height:0;overflow:hidden!important;background:transparent!important;color:var(--rt-ink)}
+.dshp-dock-body .rt-main{min-height:0;flex:1;overflow:hidden}
+.dshp-dock-body .rt-pane{min-height:0;overflow:auto!important}
 .dshp-dock-body .rt-card,.dshp-dock-body .rt-pane,.dshp-dock-body .rt-side,.dshp-dock-body .rt-main,.dshp-dock-body .rt-list,.dshp-dock-body .rt-toolbar,.dshp-dock-body .rt-evi,.dshp-dock-body .rt-live-body,.dshp-dock-body .rt-chain,.dshp-dock-body .rt-split,.dshp-dock-body .rt-table{background:var(--rt-surf)!important;color:var(--rt-ink)!important;border:1px solid var(--rt-line);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
 .dshp-dock-body .rt-title,.dshp-dock-body .rt-tab.on,.dshp-dock-body .rt-card h4,.dshp-dock-body .rt-kv b,.dshp-dock-body .rt-mono,.dshp-dock-body .rt-row,.dshp-dock-body .rt-item,.dshp-dock-body .rt-item-name,.dshp-dock-body .rt-seg-cidr,.dshp-dock-body .rt-vrow,.dshp-dock-body .rt-score-row,.dshp-dock-body h4,.dshp-dock-body .rt-link,.dshp-dock-body .rt-toolbar>span{color:var(--rt-ink)!important;text-shadow:none;font-weight:600}
 .dshp-dock-body .rt-tab,.dshp-dock-body .rt-foot,.dshp-dock-body .rt-empty,.dshp-dock-body .rt-item-desc,.dshp-dock-body .rt-kb-sub,.dshp-dock-body .rt-seg-meta,.dshp-dock-body .rt-expand,.dshp-dock-body .rt-kv span,.dshp-dock-body .rt-tag,.dshp-dock-body .rt-sess-fact>b,.dshp-dock-body .rt-sess-cmd>b,.dshp-dock-body .rt-sess-fold>summary,.dshp-dock-body .rt-score-group .rt-sg-sub,.dshp-dock-body .rt-scope,.dshp-dock-body .rt-flow-action,.dshp-dock-body .rt-sec-sub{color:var(--rt-mute)!important;text-shadow:none;opacity:1!important}
@@ -844,7 +862,7 @@ body[data-ds-dark-theme] .dshp-dock-body .dshp-switch button.is-on{background:#3
 .dshp-icon-btn{appearance:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1px solid color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 45%,transparent);border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,currentColor);cursor:pointer;font:13px/1 inherit;white-space:nowrap;flex:0 0 auto}
 .dshp-icon-btn:hover{border-color:var(--dsw-alias-brand-primary,#6dbf8c);background:color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 12%,transparent);color:var(--dsw-alias-label-primary,currentColor)}
 .dshp-icon-btn.on{border-color:var(--dsw-alias-brand-primary,#6dbf8c);color:var(--dsw-alias-brand-primary,#6dbf8c);background:color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 16%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 28%,transparent)}
-.dshp-hbtn{appearance:none;display:inline-flex;align-items:center;gap:6px;border:1px solid color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 55%,transparent);background:transparent;color:var(--dsw-alias-label-secondary,currentColor);cursor:pointer;font:12px/1 inherit;padding:5px 10px;border-radius:8px}
+.dshp-hbtn{appearance:none;display:inline-flex;flex:0 0 auto;align-items:center;gap:6px;border:1px solid color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 55%,transparent);background:transparent;color:var(--dsw-alias-label-secondary,currentColor);cursor:pointer;font:12px/1 inherit;padding:5px 10px;border-radius:8px;white-space:nowrap}
 .dshp-hbtn:hover{border-color:var(--dsw-alias-brand-primary,#6dbf8c);background:color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 12%,transparent);color:var(--dsw-alias-label-primary,currentColor)}
 .dshp-hbtn.on{border-color:var(--dsw-alias-brand-primary,#6dbf8c);color:var(--dsw-alias-brand-primary,#6dbf8c);background:color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 18%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 32%,transparent)}
 .dshp-live-dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--dsw-alias-brand-primary,#6dbf8c);box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 28%,transparent)}
@@ -852,6 +870,11 @@ body[data-ds-dark-theme] .dshp-dock-body .dshp-switch button.is-on{background:#3
 .dshp-hero-chip-btn{appearance:none;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border:1px solid color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 50%,transparent);border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 10%,transparent);color:var(--dsw-alias-label-primary,currentColor);cursor:pointer;font:12.5px/1 inherit;white-space:nowrap}
 .dshp-hero-chip-btn:hover{border-color:var(--dsw-alias-brand-primary,#6dbf8c);background:color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 18%,transparent)}
 .dshp-hero-chip-btn.on{border-color:var(--dsw-alias-brand-primary,#6dbf8c);color:var(--dsw-alias-brand-primary,#6dbf8c);background:color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 18%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--dsw-alias-brand-primary,#6dbf8c) 32%,transparent)}
+.dshp-tab-chip{display:inline-flex;align-items:flex-end;flex:0 0 auto}
+.dshp-tab-btn{appearance:none;position:relative;border:none;background:transparent;cursor:pointer;padding:0 0 9px;font:500 13px/16px inherit;color:var(--dsw-alias-label-tertiary,currentColor);white-space:nowrap}
+.dshp-tab-btn:hover{color:var(--dsw-alias-label-primary,currentColor)}
+.dshp-tab-btn.on{color:var(--dsw-alias-brand-primary,#6dbf8c)}
+.dshp-tab-btn.on:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:var(--dsw-alias-brand-primary,#6dbf8c)}
 `;
 
 		function formatSize(bytes) {
@@ -2983,7 +3006,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 .rt-body{flex:1;min-height:0;display:flex;flex-direction:column}
 .rt-split{flex:1;min-height:0;display:flex}
 .rt-side{width:200px;flex:none;border-right:1px solid var(--dsw-alias-border-l1);overflow:auto;padding:8px}
-.rt-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.rt-main{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 .rt-seg{padding:7px 8px;border-radius:6px;cursor:pointer;margin-bottom:4px;border:1px solid transparent}
 .rt-seg:hover{background:var(--dsw-alias-bg-layer-2)}
 .rt-seg.on{background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-brand-primary)}
@@ -3018,7 +3041,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 .rt-kv{display:flex;gap:8px;margin-bottom:3px;align-items:baseline}
 .rt-kv b{color:var(--dsw-alias-label-primary);font-weight:600;min-width:64px;flex:none}
 /* 图谱视图已移除（见 AssetsTab：资产关系由「域名维度」与 redteam_attack_path 工具承担） */
-.rt-pane{flex:1;overflow:auto;padding:12px}
+.rt-pane{flex:1;min-height:0;overflow:auto;padding:12px}
 .rt-card{border:1px solid var(--dsw-alias-border-l1);border-radius:8px;padding:10px;margin-bottom:10px;background:var(--dsw-alias-bg-layer-2)}
 .rt-card h4{margin:0 0 6px;font-size:13px}
 .rt-textarea{width:100%;min-height:260px;background:var(--dsw-alias-bg-base);border:1px solid var(--dsw-alias-border-l1);
@@ -4140,7 +4163,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
               placeholder: '该角色的系统提示词（Markdown）',
             }),
             h('div', { style: { fontSize: 11, color: 'var(--dsw-alias-label-secondary)', marginTop: 6 } },
-              '保存后写入 agents/' + (active || 'role') + '.md，并在该角色会话的每次模型请求前注入。'))))
+              '保存后写入 agents/' + (active || 'role') + '.md。子会话任务第一行写 redteamRole: recon、assess、vuln-scan、exploit 或 internal 后，对应文件进入系统提示词。'))))
     }
 
     /* ---------------------------------------------------------- 技能库（DSH 原生） */
@@ -5219,7 +5242,9 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 
       const stats = (data && data.stats) || { total: 0, verified: 0, reused: 0, byKind: [], bySource: [] }
       const items = (data && data.items) || []
-      const tpl = (data && data.templates) || { dir: null, total: 0, matched: 0, offset: 0, items: [] }
+      const tpl = (data && data.templates) || { dir: null, total: 0, matched: 0, offset: 0, items: [], byCategory: [] }
+      const tplByCat = new Map((tpl.byCategory || []).map((c) => [c.code, c.n || 0]))
+      const catShown = (c) => (c.n || 0) + (tplByCat.get(c.code) || 0)
       const tplItems = tpl.items || []
       const tplMatched = tpl.matched != null ? tpl.matched : tpl.total
       const tplStart = Number(tpl.offset) || 0
@@ -5296,17 +5321,20 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
           h('button', { className: 'rt-btn', disabled: busy, onClick: () => query() }, busy ? '检索中…' : '刷新')),
         /* 归类总览：点一下就是按该类筛选，一眼看清"哪类武器攒了多少、哪类还是空的" */
         h('div', { className: 'rt-kb-cats' },
-          (stats.byCategory || []).filter((c) => c.n > 0 || POC_CAT_ORDER.includes(c.code)).map((c) => h('span', {
+          (stats.byCategory || []).filter((c) => catShown(c) > 0 || POC_CAT_ORDER.includes(c.code)).map((c) => h('span', {
             key: c.code,
             className: 'rt-concl-i' + (category === c.code ? ' on' : ''),
-            title: c.hint || ('筛选：' + (POC_CAT_NAME[c.code] || c.code)),
+            title: (c.hint || POC_CAT_NAME[c.code] || c.code)
+              + ' · 本机模板 ' + (tplByCat.get(c.code) || 0)
+              + ' · 知识库 ' + (c.n || 0)
+              + (c.verified ? '（已验证 ' + c.verified + '）' : ''),
             onClick: () => {
               const next = category === c.code ? '' : c.code
               setCategory(next)
               query({ category: next || undefined })
             },
           },
-            h('b', null, String(c.n || 0)),
+            h('b', null, String(catShown(c))),
             h('span', null, (POC_CAT_NAME[c.code] || c.code) + (c.verified ? '（已验证 ' + c.verified + '）' : ''))))),
         h('div', { className: 'rt-kb-filter' },
           h('input', {
@@ -5371,6 +5399,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
                   + '（直接 `nuclei -t <模板路径>`）'),
                 tplItems.map((t, i) => h('div', { key: 't' + tplStart + '-' + i, className: 'rt-kb-tpl-row' },
                   h('span', { className: 'rt-tag' }, t.severity || '—'),
+                  t.category ? h('span', { className: 'rt-tag' }, POC_CAT_NAME[t.category] || t.category) : null,
                   h('span', { className: 'rt-mono rt-kb-tpl-path', title: t.path }, t.path),
                   h('span', { className: 'rt-kb-tpl-name', title: t.name }, t.name || ''),
                   h('button', {
@@ -5506,12 +5535,13 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
           h('div', { className: 'rt-spacer' }),
           h('button', { className: 'rt-btn', disabled: busy, onClick: load }, busy ? '读取中…' : '刷新'),
           h('button', { className: 'rt-btn rt-btn-primary', disabled: busy || !draft, onClick: save }, '保存')),
+        h('div', { className: 'rt-pane', style: { minHeight: 0 } },
         err ? h('div', { className: 'rt-err' }, err) : null,
         msg ? h('div', { className: msg.err ? 'rt-err' : 'rt-foot' }, msg.err || msg.ok) : null,
-        h('div', { className: 'rt-card', style: { margin: '8px 12px', fontSize: 12, lineHeight: 1.6 } },
+        h('div', { className: 'rt-card', style: { margin: '0 0 8px', fontSize: 12, lineHeight: 1.6 } },
           adapt.message
             || '均可选填：留空则用默认路径/自动查找。填了的覆盖默认。密钥类只在需要测绘/反弹时才填。'),
-        h('div', { className: 'rt-card', style: { margin: '8px 12px', fontSize: 12, lineHeight: 1.6 } },
+        h('div', { className: 'rt-card', style: { margin: '0 0 8px', fontSize: 12, lineHeight: 1.6 } },
           h('div', { style: { fontWeight: 600, marginBottom: 6 } }, '整包文件夹 → 自动分配工具'),
           h('div', { style: { marginBottom: 8, opacity: 0.9 } },
             '工具都在同一个文件夹（含子目录）时，填路径后点「自动分配」：会写入 toolkitDir，并按文件名匹配 nmap / nuclei / fscan 等填到下方。'),
@@ -5527,15 +5557,15 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
               className: 'rt-btn rt-btn-primary', disabled: busy,
               onClick: assignFolder,
             }, busy ? '扫描中…' : '自动分配'))),
-        data && data.hint ? h('div', { className: 'rt-card', style: { margin: '8px 12px', fontSize: 12, lineHeight: 1.6 } }, data.hint) : null,
-        data && data.egress ? h('div', { className: 'rt-card', style: { margin: '8px 12px', fontSize: 12, lineHeight: 1.55 } },
+        data && data.hint ? h('div', { className: 'rt-card', style: { margin: '0 0 8px', fontSize: 12, lineHeight: 1.6 } }, data.hint) : null,
+        data && data.egress ? h('div', { className: 'rt-card', style: { margin: '0 0 8px', fontSize: 12, lineHeight: 1.55 } },
           h('div', { style: { fontWeight: 600, marginBottom: 6 } }, '出网状态（借鉴 Z3r0 egress，只读）'),
           h('div', { className: 'rt-mono', style: { fontSize: 11 } }, 'HTTP_PROXY=' + (data.egress.http_proxy || '(空)')),
           h('div', { className: 'rt-mono', style: { fontSize: 11 } }, 'HTTPS_PROXY=' + (data.egress.https_proxy || '(空)')),
           h('div', { className: 'rt-mono', style: { fontSize: 11 } }, 'ALL_PROXY=' + (data.egress.all_proxy || '(空)')),
           h('div', { className: 'rt-mono', style: { fontSize: 11 } }, 'NO_PROXY=' + (data.egress.no_proxy || '(空)')),
           h('div', { style: { marginTop: 6, opacity: 0.85 } }, data.egress.note || '')) : null,
-        !draft ? h('div', { className: 'rt-empty' }, '加载中…') : h('div', { className: 'rt-pane' },
+        !draft ? h('div', { className: 'rt-empty' }, '加载中…') : h('div', null,
           h('div', { className: 'rt-card' },
             h('h4', null, '平台与目录'),
             h('div', { style: { display: 'grid', gap: 8 } },
@@ -5608,7 +5638,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
           h('div', { className: 'rt-foot' },
             h('span', null,
               '配置文件：' + ((data && data.config && data.config.path) || '$DSH_HOME/redteam/config.json')
-              + ' | 留空字段全部走默认'))))
+              + ' | 留空字段全部走默认')))))
     }
 
     /* ---------------------------------------------------------- 得分目标 */
@@ -7595,19 +7625,52 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 			return null;
 		}
 
-		/** 会话中：顶栏右侧显示 dsh-purge，打开插件。 */
-		function SessionHeaderPurge() {
+		/** 挂在「对话 / 轨迹 / 上下文」这一排，紧挨上下文。 */
+		function TabRowPurgeMount() {
 			const t = useT();
 			const st = useDock();
-			return h("button", {
+			const [host, setHost] = useState(null);
+			useEffect(() => {
+				let dead = false;
+				const ensure = () => {
+					if (dead || typeof document === "undefined") return;
+					const row = document.querySelector("[data-conversation-tabs]");
+					if (!row) {
+						setHost((prev) => (prev ? null : prev));
+						return;
+					}
+					let el = row.querySelector(":scope > .dshp-tab-chip");
+					if (!el) {
+						el = document.createElement("div");
+						el.className = "dshp-tab-chip";
+						row.appendChild(el);
+					}
+					setHost((prev) => (prev === el ? prev : el));
+				};
+				ensure();
+				const obs = typeof MutationObserver !== "undefined"
+					? new MutationObserver(() => ensure())
+					: null;
+				if (obs) obs.observe(document.body, { childList: true, subtree: true });
+				const iv = setInterval(ensure, 1000);
+				return () => {
+					dead = true;
+					if (obs) obs.disconnect();
+					clearInterval(iv);
+				};
+			}, []);
+			if (!host) return null;
+			const btn = h("button", {
 				type: "button",
-				className: "dshp-hbtn" + (st.open ? " on" : ""),
+				className: "dshp-tab-btn" + (st.open ? " on" : ""),
 				title: st.open ? (t("dock.inSession") + " · 已开启") : (t("dock.inSession") + " · 点击打开"),
 				onClick: () => toggleDock(),
-			},
-				st.open ? h("span", { className: "dshp-live-dot", "aria-hidden": "true" }) : null,
-				t("dock.inSession"),
-			);
+			}, t("dock.inSession"));
+			try {
+				const rd = require("react-dom");
+				if (rd && typeof rd.createPortal === "function") return rd.createPortal(btn, host);
+			} catch { /* host 可能没暴露 react-dom */ }
+			return null;
 		}
 
 
@@ -7645,13 +7708,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 				name: "shell.overlay",
 				id: "dsh-purge-dock",
 				order: 50,
-			}, () => h(react.Fragment, null, h(PurgeDock), h(HeroNewSessionMount), h(EnvAdaptSendGate))));
-			ctx.slots.inject("conversation.session.header.utilities", () => ctx.slots.register({
-				name: "conversation.session.header.utilities",
-				id: "dsh-purge-header",
-				order: 90,
-				label: () => t("dock.inSession"),
-			}, () => h(SessionHeaderPurge)));
+			}, () => h(react.Fragment, null, h(PurgeDock), h(HeroNewSessionMount), h(TabRowPurgeMount), h(EnvAdaptSendGate))));
 			try {
 				if (typeof ctx.inject === "function") {
 					ctx.inject(["sessions", "uiWorkspace", "workspaces", "conversation"], (host) => installRewindUi(host));

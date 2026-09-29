@@ -4,7 +4,7 @@ import { ALL_PATCHES, applyReplacementsToText } from "../lib/core.js";
 
 // 回归锚点：WAF/CDN 拦截页是完整 HTML，不是 JSON API 应答。原实现从任意文本里
 // 正则抠 401/403 数字就判 AUTH，Cloudflare/Render 的 403 拦截页会让 UI 报
-// 「API key is invalid」。patch id 46 必须把 HTML 拦截页归 BLOCKED、截断正文摘要，
+// 「API key is invalid」。patch id 47 必须把 HTML 拦截页归 BLOCKED、截断正文摘要，
 // 并且只在干净的状态行上才可能判定为密钥错误。
 const WAF_BLOCK_PAGE =
   "<!DOCTYPE html><html><head><title>Blocked</title></head><body>" +
@@ -23,12 +23,12 @@ const ORIGINAL_SNIPPET =
   "\t\t\t\t\tcode: classifyPiAiError(text)";
 
 function loadWafPatch() {
-  const patch = ALL_PATCHES.find((p) => p.id === 46);
-  assert.ok(patch, "patch id 46 (WAF_BLOCK_CLASSIFIER) must exist");
+  const patch = ALL_PATCHES.find((p) => p.id === 47);
+  assert.ok(patch, "patch id 47 (WAF_BLOCK_CLASSIFIER) must exist");
   return patch;
 }
 
-describe("WAF_BLOCK_CLASSIFIER (patch id 46)", () => {
+describe("WAF_BLOCK_CLASSIFIER (patch id 47)", () => {
   it("targets dsh-llm-pi-ai and carries the block-page classifier", () => {
     const patch = loadWafPatch();
     assert.equal(patch.file, "dsh-llm-pi-ai");

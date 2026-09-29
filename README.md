@@ -4,7 +4,7 @@
 
 <h1 align="center">⚔️ DeepSeek Harness cybersecurity red-team tool (dsh-purge)</h1>
 
-<p align="center"><strong>Version 1.1.34</strong></p>
+<p align="center"><strong>Version 1.1.39</strong></p>
 
 <p align="center">
   <em>Local official DeepSeek Harness cybersecurity red-team plugin. Clean host policy, and ship a built-in drill console. Swap prompts per model. Default prompt for Chinese models — 小码酱. Please star ⭐</em>
@@ -137,7 +137,7 @@ DSHA also accepts the older `.zip` archive URL, but the repository URL is prefer
 
 Host detection: DSHA exports `DSHA_APP=1` together with `DSH_HOME` / `DSHA_WEB_GENERATION` / `DSHA_STARTUP_PROFILE`. For older DSHA builds that did not export `DSHA_APP`, the plugin also accepts any DSHA-only variable as proof of a DSHA host, so it never falls back to standalone-Web behaviour (patching launchers, respawning Web, self-updating) inside the Android container. An explicit `DSH_SURFACE` still overrides detection.
 
-`autoApplyOnStart` / `autoUpdateOnStart` stay `true` on DSHA by design: both decisions are short-circuited by the host check before any file is written (`autoApply` returns `skip:dsha_manual_apply_required`, the updater returns `skipped:host_managed`). Disabling the switches would not add protection — it would only remove auto-apply and auto-update from Web and Desktop. Because startup never auto-applies on DSHA, the Rules card shows an explicit Apply reminder, and the last startup decision is reported as `auto_apply` in the plugin status payload.
+On DSHA, both startup automations are short-circuited by the host check before any file is written: `autoApply` returns `skip:dsha_manual_apply_required` and the updater returns `skipped:host_managed`. So neither switch can make DSHA rewrite its own loader tree at boot — the protection does not depend on their values, and there is no reason to disable them "for DSHA's sake" (that would only cost auto-apply on Web and Desktop). Because startup never auto-applies on DSHA, the Rules card shows an explicit Apply reminder, and the last startup decision is reported as `auto_apply` in the plugin status payload.
 
 #### Permission presets: never delete `DSH_PERMISSION_MODE`
 
@@ -591,7 +591,7 @@ Plugin config lives in `cordis.patch.yml`:
       config:
         enabled: true
         autoApplyOnStart: true
-        autoUpdateOnStart: true
+        autoUpdateOnStart: false
         autoRevertOnMissing: false
         verbose: false
         postPromptOrder: 5100
@@ -804,6 +804,19 @@ What changed, and the zip, are on [Releases](https://github.com/YuJunZhiXue/dsh-
 - After an upgrade, unmatched originals show as skipped. Apply still completes, and those files are left unchanged.
 - Third-party plugin *source repos* outside `@deepseek-ai` are left alone (CMD silence may **best-effort** patch installed doctor / market / liangshen / mnemon at runtime).
 - The npm package name is not published yet. Install from GitHub, the [Hub](https://deepseek.stream/plugins/dsh-purge), or `dsh plugin add .`.
+
+---
+
+## ☕ Sponsor
+
+If this project helps you, send it over — I'm out here asking~
+
+| Asset | Address |
+| --- | --- |
+| USDT (TRC20) | `TV5ajPkRD8RH623Dx9mqvYZVNN8nPGRKid` |
+| Solana | `6x16GhRgLVpKFFXaU1seKNdx2rypspSJTL4dbpt6Xpwk` |
+| Ethereum | `0xB68BD60C0e8c519513B7DF9bB147696815423B3E` |
+| Bitcoin | `bc1qu70yxkrtwnymt8ryluz9x8y8hqzune5340npht` |
 
 ---
 

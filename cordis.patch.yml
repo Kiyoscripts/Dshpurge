@@ -35,15 +35,15 @@
       name: 'dsh-purge'
       config:
         enabled: true
-        # autoApplyOnStart / autoUpdateOnStart 保持 true 是刻意的：
-        # 在 DSHA 上二者都会被宿主判定短路（autoApply 在改写任何文件前返回
+        # DSHA 上这两项都会被宿主判定短路：autoApply 在改写任何文件前返回
         # skip:dsha_manual_apply_required，autoUpdateIfNeeded 返回
-        # skipped:host_managed），无需靠关闭开关来「保护」DSHA。
-        # 关掉反而会让 Web / 桌面端失去自动应用与自动更新，属于功能回退。
+        # skipped:host_managed。因此无论开关取何值，DSHA 的启动路径都不会
+        # 自行改写 loader 树 —— 安全性不依赖开关，不要为了「保护 DSHA」而
+        # 关掉它们（那只会让 Web / 桌面端失去自动应用，属功能回退）。
         # 判定依据是宿主注入的 DSHA_APP=1（旧版 DSHA 由 DSHA_* 旁证兜底），
         # 不能改成依赖插件自行猜测环境。
         autoApplyOnStart: true
-        autoUpdateOnStart: true
+        autoUpdateOnStart: false
         autoRevertOnMissing: false
         injectOnce: false
         stripMnemon: true
