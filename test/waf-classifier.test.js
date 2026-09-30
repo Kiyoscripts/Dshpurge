@@ -68,6 +68,52 @@ describe("WAF_BLOCK_CLASSIFIER (patch id 47)", () => {
     assert.equal(classify("401 Unauthorized"), "AUTH");
     assert.equal(classify('<title>502 Bad Gateway</title>'), "PI_AI_ERROR");
   });
+
+  it("recovers the HTTP status from a block page whose body starts with markup", () => {
+    // 拦截页以 <!DOCTYPE html> 开头，状态码不在行首。早期实现只做 /^\s*(\d{3})/，
+    // 于是摘要退化成 "HTTP error"，把最关键的号码丢了。这里锁定必须取到 403。
+    const patch = loadWafPatch();
+    const out = applyReplacementsToText(ORIGINAL_SNIPPET, patch, "").text;
+    const summarize = patchToSummarizer(out);
+    const summary = summarize(WAF_BLOCK_PAGE);
+    assert.match(summary, /HTTP 403/, `summary lost the status: ${summary}`);
+    assert.match(summary, /not an API-key problem/);
+    // 请求 ID 也要留在摘要里，便于对账。
+    assert.match(summary, /a4097a15b9d88986/);
+    // 摘要本身是一行固定文案，存在下限；真正要保证的是对真实拦截页的绝对截断：
+    // 数百 KB 的 markup 必须收敛成一行，否则整页会进 transcript 并逐轮回放给模型。
+    assert.ok(summary.length < 400, `summary not bounded: ${summary.length} bytes`);
+    const huge =
+      "<!DOCTYPE html><html><head><title>Blocked</title></head><body>" +
+      "<h1>403 - Forbidden</h1>" +
+      "<p>Your request was blocked by this site's web application firewall (WAF). " +
+      "Request ID: a4097a15b9d88986</p><div>" +
+      "x".repeat(200000) +
+      "</div></body></html>";
+    const hugeSummary = summarize(huge);
+    assert.ok(
+      hugeSummary.length < 400,
+      `200KB block page was not truncated: ${hugeSummary.length} bytes`,
+    );
+    assert.match(hugeSummary, /HTTP 403/);
+  });
+
+  it("still reports a non-block HTML page with its status and title", () => {
+    const patch = loadWafPatch();
+    const out = applyReplacementsToText(ORIGINAL_SNIPPET, patch, "").text;
+    const summarize = patchToSummarizer(out);
+    const summary = summarize("<html><head><title>503 Service Unavailable</title></head><body>x</body></html>");
+    assert.match(summary, /HTTP 503/, `summary lost the status: ${summary}`);
+    assert.match(summary, /503 Service Unavailable/);
+  });
+
+  it("leaves a bare status line untouched (no HTML, no truncation)", () => {
+    const patch = loadWafPatch();
+    const out = applyReplacementsToText(ORIGINAL_SNIPPET, patch, "").text;
+    const summarize = patchToSummarizer(out);
+    assert.equal(summarize("401 Unauthorized"), "401 Unauthorized");
+    assert.equal(summarize("connection reset by peer"), "connection reset by peer");
+  });
 });
 
 function patchReplacementsText(patch) {
@@ -83,4 +129,10 @@ function patchToClassifier(text) {
   const cut = text.indexOf("\n\t\t\t\t\tmessage: ");
   const body = (cut >= 0 ? text.slice(0, cut) : text);
   return new Function(`${body}\nreturn classifyPiAiError;`)();
+}
+
+function patchToSummarizer(text) {
+  const cut = text.indexOf("\n\t\t\t\t\tmessage: ");
+  const body = (cut >= 0 ? text.slice(0, cut) : text);
+  return new Function(`${body}\nreturn summarizeFailureText;`)();
 }

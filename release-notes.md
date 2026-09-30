@@ -1,3 +1,17 @@
+# 1.4.2
+
+## 中文
+
+- **修复 WAF 拦截页摘要丢掉 HTTP 状态码**（`id: 47`）。拦截页以 `<!DOCTYPE html>` 开头，状态码不在行首，而早期实现只做 `/^\s*(\d{3})/`，于是 `summarizeFailureText()` 退化成 `HTTP error` —— 分类正确，但把最关键的号码丢了。现在改为三段取值：裸状态行 → `<title>` / `<h1>` / `<h2>` 内的三位数 → `403 Forbidden` 这类状态短语。同一处修复也让非拦截类 HTML 页（如 503 网关页）能带出真实状态码。
+- 测试补齐：新增 3 条回归用例锁定摘要行为 —— 状态码恢复、非拦截 HTML 页、裸状态行不被截断。此前的用例只断言分类结果，没断言摘要文本，因而漏掉了这个缺陷。
+- 摘要体积约束改为按绝对值断言（真实拦截页 200KB → <400 字节），原因是摘要是固定文案、存在下限，对极小样本用比例断言本身没有意义。
+
+## English
+
+- **Fix the WAF block-page summary losing its HTTP status** (`id: 47`). A block page starts with `<!DOCTYPE html>`, so the status code is not at the start of the text; the earlier implementation only tried `/^\s*(\d{3})/`, which degraded `summarizeFailureText()` to `HTTP error` — correct classification, but the single most useful number was dropped. It now tries three shapes in order: a bare status line, three digits inside `<title>` / `<h1>` / `<h2>`, then a status phrase such as `403 Forbidden`. The same fix lets non-block HTML pages (e.g. a 503 gateway page) report their real status.
+- Test coverage: three new regression cases pin the summary behavior — status recovery, a non-block HTML page, and a bare status line that must not be truncated. The earlier cases only asserted the classification result and never the summary text, which is why this defect slipped through.
+- The summary size assertion is now absolute (a real 200KB block page → under 400 bytes) rather than a ratio, because the summary is fixed prose with a floor, so a ratio against a tiny fixture was meaningless.
+
 # 1.4.1
 
 ## 中文
